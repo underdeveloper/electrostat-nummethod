@@ -69,6 +69,9 @@ class EstablishFDM(Scene):
         self.play(Write(cdr_narration), Write(cdr_narration2)) 
         # There used to be a Transform() here, from a copy of cdr_narration into cdr_narration2.
         # I think that caused the problem with how cdr_narration2 interacts with animations? Not sure.
+
+        # Found out the solution. Transform() defaults to that ^^
+        # What I should be using instead is ReplacementTransform()!
         self.wait(1)
         self.play(FadeOut(cdr_narration), FadeOut(cdr_narration2))
         self.play(ApplyMethod(central_diff_r.shift, UP))
@@ -95,20 +98,30 @@ class EstablishFDM2(Scene):
         laplacian_fdm = Tex('$\\nabla^2 \\Phi \\approx \\frac{\\Phi _1 + \\Phi _2 - 2\\Phi _0}{h_r^2} + \\frac{1}{r} \\frac{\\Phi _1 - \\Phi _2}{2h_r} + \\frac{1}{r^2} \\frac{\\Phi _3 + \\Phi _4 - 2\\Phi _0}{h_\\theta}$', tex_template=fdm_template)
         laplacian_fdm2 = Tex('$\\nabla^2 \\Phi \\approx \\frac{\\Phi _1 + \\Phi _2 - 2\\Phi _0}{h_r^2} + \\frac{h_r}{2r} \\cdot \\frac{\\Phi _1 - \\Phi _2}{h_r^2} + \\frac{1}{r^2} \\frac{\\Phi _3 + \\Phi _4 - 2\\Phi _0}{h_\\theta}$', tex_template=fdm_template)
         laplacian_fdm3 = Tex('$\\nabla^2 \\Phi \\vert_{h_r = h_\\theta = h \\rightarrow 0} \\approx \\frac{\\Phi _1 + \\Phi _2 - 2\\Phi _0}{h_r^2} + \\frac{h_r}{2r} \\cdot \\frac{\\Phi _1 - \\Phi _2}{h_r^2} + \\frac{1}{r^2} \\frac{\\Phi _3 + \\Phi _4 - 2\\Phi _0}{h_\\theta}$', tex_template=fdm_template)
-        laplacian_fdm3_cancelled = Tex('$\\nabla^2 \\Phi \\vert_{h_r = h_\\theta = h \\rightarrow 0} \\approx \\frac{\\Phi _1 + \\Phi _2 - 2\\Phi _0}{h^2} + \\cancelto{0}{ \\frac{h}{2r} \\cdot \\frac{\\Phi _1 - \\Phi _2}{h^2} } + \\frac{1}{r^2} \\frac{\\Phi _3 + \\Phi _4 - 2\\Phi _0}{h}$', tex_template=fdm_template)
+        laplacian_fdm3_cancel = Tex('$\\nabla^2 \\Phi \\vert_{h_r = h_\\theta = h \\rightarrow 0} \\approx \\frac{\\Phi _1 + \\Phi _2 - 2\\Phi _0}{h^2} + \\cancel{ \\frac{h}{2r} \\cdot \\frac{\\Phi _1 - \\Phi _2}{h^2} } + \\frac{1}{r^2} \\frac{\\Phi _3 + \\Phi _4 - 2\\Phi _0}{h}$', tex_template=fdm_template)
         laplacian_fdm4 = Tex('$\\nabla^2 \\Phi \\vert_{h_r = h_\\theta = h \\rightarrow 0} \\approx \\frac{\\Phi _1 + \\Phi _2 + \\Phi _3 + \\Phi _4 - 4\\Phi _0}{h}$', tex_template=fdm_template)
 
         # test = Tex('$\\Delta \\Phi \\mathrm{why{}is{}this{}thing{}not{}working!!!}$')
 
         self.play(Write(fdm_dr2), Write(fdm_dr), Write(fdm_dT))
-        self.play(FadeOut(fdm_dr2), FadeOut(fdm_dr), FadeOut(fdm_dT))
-
-        self.play(Write(laplacian_fdm))
         self.wait(1)
 
-        self.play(Transform(laplacian_fdm, laplacian_fdm2))
-        self.play(ApplyMethod(laplacian_fdm2.shift, UP))  # For some reason it makes a copy of fdm2, so the original one does not disappear while a 'copy' of it is shifted upwards
+        self.play(FadeOut(fdm_dr2), FadeOut(fdm_dr), FadeOut(fdm_dT), Write(laplacian_fdm))
         self.wait(1)
 
-        self.play(Transform(laplacian_fdm2, Text("WHY"))) 
+        self.play(ReplacementTransform(laplacian_fdm, laplacian_fdm2))
         self.wait(1)
+
+        self.play(ReplacementTransform(laplacian_fdm2, laplacian_fdm3))
+        self.wait(1)
+
+        self.play(ReplacementTransform(laplacian_fdm3, laplacian_fdm3_cancel))
+        self.wait(1)
+
+        self.play(ReplacementTransform(laplacian_fdm3_cancel, laplacian_fdm4))
+        self.wait(1)
+        
+        laplacian_fdm5 = Tex('$\\nabla^2 \\Phi(r,\\theta) \\vert_{(r_0,\\theta_0), h} \\approx$ \\\\ $\\frac{\\Phi(r_0+h,\\theta_0) + \\Phi(r_0-h,\\theta_0) + \\Phi(r_0,\\theta_0+h) + \\Phi(r_0,\\theta_0-h) - 4\\Phi(r_0,\\theta_0)}{h}$', color=BLUE, tex_template=fdm_template)
+
+        self.play(ApplyMethod(laplacian_fdm4.shift, 1.5*UP), Write(laplacian_fdm5))
+        self.wait()
