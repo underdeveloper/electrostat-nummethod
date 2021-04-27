@@ -44,7 +44,7 @@ class Problem(Scene):
             *[FadeOut(mob)for mob in self.mobjects]
             # All mobjects in the screen are saved in self.mobjects
         )
-        self.wait(1)
+        self.wait()
 
 class EstablishFDM(Scene):
     def construct(self):
@@ -66,16 +66,19 @@ class EstablishFDM(Scene):
         laplacian_polar.shift(DOWN)
 
         self.play(Write(central_diff_r))
-        self.play(Write(cdr_narration))
-        self.play(Transform(Text("Ini adalah metode perbedaan tengah.").shift(UP), cdr_narration2))
+        self.play(Write(cdr_narration), Write(cdr_narration2)) 
+        # There used to be a Transform() here, from a copy of cdr_narration into cdr_narration2.
+        # I think that caused the problem with how cdr_narration2 interacts with animations? Not sure.
         self.wait(1)
-        self.play(ApplyMethod(central_diff_r.shift, UP), FadeOut(cdr_narration), FadeOut(cdr_narration2)) # For some reason FadeOut() isn't applied to cdr_narration2 here?
+        self.play(FadeOut(cdr_narration), FadeOut(cdr_narration2))
+        self.play(ApplyMethod(central_diff_r.shift, UP))
         self.play(Write(laplace_eq, duration=2), Write(laplacian_polar))
         self.wait(2)
         self.play(
             *[FadeOut(mob)for mob in self.mobjects]
             # All mobjects in the screen are saved in self.mobjects
         )
+        self.wait()
 
 class EstablishFDM2(Scene):
     def construct(self):
