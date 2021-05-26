@@ -29,17 +29,19 @@ class Problem(Scene):
         AngleText = Tex('$\\frac{2\\pi}{3}rad$', color=WHITE, 
                         tex_template=thisTemplate).shift(0.5*RIGHT+0.6*UP).scale(0.5)
 
+        self.add_foreground_mobjects(RedArc, WhiteArc) # This permanently sticks the objects in the foreground!!!
         self.play(Create(RedArc))
         self.play(Create(WhiteArc))
         self.play(ApplyMethod(RedArc.scale_about_point, 2, ORIGIN),
                   ApplyMethod(WhiteArc.scale_about_point, 2, ORIGIN))
         self.play(Write(RedVolt), Write(WhiteVolt))
         self.play(Create(RedSector), Create(WhiteSector))
+        # self.bring_to_front(RedArc, WhiteArc) # impossible to play continuously with create sectors?
         self.play(Write(RedPermissivity), Write(WhitePermissivity))
         self.play(Write(Text1))
         self.play(ApplyMethod(Text1.shift, 4.2*RIGHT),
                   Create(AngleArc), Write(AngleText))
-
+        self.wait(2)
         self.play(
             *[FadeOut(mob)for mob in self.mobjects]
             # All mobjects in the screen are saved in self.mobjects
@@ -125,3 +127,69 @@ class EstablishFDM2(Scene):
 
         self.play(ApplyMethod(laplacian_fdm4.shift, 1.5*UP), Write(laplacian_fdm5))
         self.wait()
+
+
+class Problem2(Scene):
+    def construct(self):
+
+        thisTemplate = TexTemplate()
+        thisTemplate.add_to_preamble(r"\usepackage{gensymb}")
+        thisTemplate.add_to_preamble(r"\usepackage{derivative}")
+        thisTemplate.add_to_preamble(r"\usepackage{cancel}")
+
+        RedArc = Arc(color=RED, start_angle=0, angle=-2*TAU /
+                     3, stroke_width=2*DEFAULT_STROKE_WIDTH)
+        WhiteArc = Arc(color=WHITE, start_angle=-2*TAU/3, angle=-
+                       TAU/3, stroke_width=2*DEFAULT_STROKE_WIDTH)
+
+        RedSector = Sector(color='#021a00', start_angle=0,
+                           angle=-2*TAU/3, outer_radius=2.0)
+        WhiteSector = Sector(color='#0f0e12', start_angle=0,
+                             angle=TAU/3, outer_radius=2.0)
+
+        RedVolt = Tex('$+1V$', color=RED).shift(1.7*LEFT+1.7*DOWN).scale(0.7)
+        WhiteVolt = Tex('$-1V$', color=WHITE).shift(1.7 *
+                                                    RIGHT+1.7*UP).scale(0.7)
+
+        RedPermissivity = Tex('$4 \\epsilon _0$', color='#00ff00').shift(
+            0.2*LEFT+1.5*DOWN).scale(0.7)
+        WhitePermissivity = Tex('$\\epsilon _0$', color='#d2bdff').shift(
+            0.2*RIGHT+1.5*UP).scale(0.7)
+
+        # This permanently sticks the objects in the foreground!!!
+        # self.add_foreground_mobjects(RedArc, WhiteArc)
+        self.play(Create(RedArc))
+        self.play(Create(WhiteArc))
+        self.play(ApplyMethod(RedArc.scale_about_point, 2, ORIGIN),
+                  ApplyMethod(WhiteArc.scale_about_point, 2, ORIGIN))
+        self.play(Write(RedVolt), Write(WhiteVolt))
+        self.play(Create(RedSector), Create(WhiteSector))
+        # self.bring_to_front(RedArc, WhiteArc) # impossible to play continuously with create sectors?
+        self.play(Write(RedPermissivity), Write(WhitePermissivity))
+        # self.wait(2)
+        # self.play(
+        #     *[FadeOut(mob)for mob in self.mobjects]
+        #     # All mobjects in the screen are saved in self.mobjects
+        # )
+        # self.wait()
+
+        min_theta = 0  # multiple of TAU/20
+        max_theta = TAU  # multiple of TAU/20
+        min_r = 0
+        max_r = 2
+
+        theta = min_theta
+        while theta <= max_theta:
+            self.play(Create(ParametricFunction(lambda t: np.array((
+                t*np.cos(theta), t*np.sin(theta), 0)), color=GREY, t_min=min_r, t_max=max_r)), run_time=0.5)
+            theta += TAU/6
+
+        self.play(FadeOut(RedPermissivity), FadeOut(WhitePermissivity))
+
+        r = min_r
+        while r <= max_r:
+            self.play(Create(ParametricFunction(lambda t: np.array((
+                r*np.cos(t), r*np.sin(t), 0)), color=GREY, t_min=min_theta, t_max=max_theta)), run_time=0.5)
+            r += 0.4
+
+        self.wait(2)
