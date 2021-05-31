@@ -192,7 +192,9 @@ class Problem2(Scene):
         theta = min_theta
         while theta <= max_theta:
             self.play(Create(ParametricFunction(lambda t: np.array((
-                t*np.cos(theta), t*np.sin(theta), 0)), color=GREY, t_min=min_r, t_max=max_r)), run_time=0.5)
+                t*np.cos(theta), t*np.sin(theta), 0)), color=GREY, t_min=min_r, t_max=max_r)), run_time=0.2)
+            # self.add(ParametricFunction(lambda t: np.array((
+            #     t*np.cos(theta), t*np.sin(theta), 0)), color=GREY, t_min=min_r, t_max=max_r))
             theta += TAU/6
 
         deltaAngle = Tex('$\\Delta \\Phi = \\frac{\\pi}{3}$').shift(2.5*UP)
@@ -204,9 +206,115 @@ class Problem2(Scene):
         r = min_r
         while r <= max_r:
             self.play(Create(ParametricFunction(lambda t: np.array((
-                r*np.cos(t), r*np.sin(t), 0)), color=GREY, t_min=min_theta, t_max=max_theta)), run_time=0.5)
+               r*np.cos(t), r*np.sin(t), 0)), color=GREY, t_min=min_theta, t_max=max_theta)), run_time=0.2)
+            # self.add(ParametricFunction(lambda t: np.array((
+            #     r*np.cos(t), r*np.sin(t), 0)), color=GREY, t_min=min_theta, t_max=max_theta))
             r += 0.4
 
         self.play(Write(deltaRadius))
 
+        dots_oh_my: list[Dot()] = []
+        dot_count = 0
+
+        theta = min_theta
+        r = min_r + 0.4
+        while (r < max_r):
+            while (theta < max_theta):
+                dots_oh_my.append(Dot(point=(r*np.sin(theta))*UP+(r*np.cos(theta))*RIGHT))
+                self.play(Create(dots_oh_my[dot_count]), run_time=0.1)
+                theta += TAU/6
+                dot_count += 1
+            r += 0.4
+            theta = min_theta
+        
+        dots_oh_my.append(Dot())
+        self.play(Create(dots_oh_my[dot_count]))
+        
+        self.wait(2)
+
+class Problem3(Scene):
+    def construct(self):
+        
+        Xemplate = TexTemplate()
+        Xemplate.add_to_preamble(r"\usepackage{gensymb}")
+        Xemplate.add_to_preamble(r"\usepackage{derivative}")
+        Xemplate.add_to_preamble(r"\usepackage{cancel}")
+        Xemplate.add_to_preamble(r"\usepackage{siunitx}")
+
+
+        deriv1st = Tex(r"$\odv{\Phi}{r}\rvert_{r_0} = \frac{\Phi\left(r_0+h\right)-\Phi\left(r_0-h\right)}{2h}$", tex_template=Xemplate).move_to(3*UP)
+        deriv2nd = Tex(r"$\odv[2]{\Phi}{r}\rvert_{r_0} = \frac{\Phi\left(r_0+h\right)+\Phi\left(r_0-h\right)-2\Phi\left(r_0\right)}{h^2}$", tex_template=Xemplate).move_to(2*UP)
+        
+        self.play(Write(deriv1st), Write(deriv2nd))
+
+        d_theta = TAU/6
+        d_radial = 1.4
+
+        min_theta = 0 * d_theta  # multiple of d_theta
+        max_theta = 2 * d_theta  # multiple of d_theta
+        min_radial = 1 * d_radial # multiple of d_radial
+        max_radial = 3 * d_radial # multiple of d_radial
+
+        theta = min_theta
+        while theta <= max_theta:
+            self.play(Create(ParametricFunction(lambda t: np.array((
+                t*np.cos(theta), t*np.sin(theta), 0)), color=BLUE, t_min=min_radial, t_max=max_radial).shift(3*DOWN+2*LEFT)), run_time=0.2)
+            # self.add(ParametricFunction(lambda t: np.array((
+            #     t*np.cos(theta), t*np.sin(theta), 0)), color=GREY, t_min=min_radial, t_max=max_radial))
+            theta += d_theta
+
+        r = min_radial
+        while r <= max_radial:
+            self.play(Create(ParametricFunction(lambda t: np.array((
+               r*np.cos(t), r*np.sin(t), 0)), color=BLUE, t_min=min_theta, t_max=max_theta).shift(3*DOWN+2*LEFT)), run_time=0.2)
+            # self.add(ParametricFunction(lambda t: np.array((
+            #     r*np.cos(t), r*np.sin(t), 0)), color=GREY, t_min=min_theta, t_max=max_theta))
+            r += d_radial
+
+        Phi0 = Dot(point=2*d_radial*np.cos(1*d_theta)*RIGHT+2*d_radial*np.sin(1*d_theta)*UP, color=WHITE).shift(3*DOWN+2*LEFT)
+        Phi0Eq = Tex(r"$\Phi_0$", color=WHITE).next_to(Phi0)
+        Phi1 = Dot(point=2*d_radial*np.cos(2*d_theta)*RIGHT+2*d_radial*np.sin(2*d_theta)*UP, color=GREEN).shift(3*DOWN+2*LEFT)
+        Phi1Eq = Tex(r"$\Phi_1$", color=GREEN).next_to(Phi1).shift(0.1*DOWN+0.1*LEFT)
+        Phi2 = Dot(point=2*d_radial*np.cos(0*d_theta)*RIGHT+2*d_radial*np.sin(0*d_theta)*UP, color=YELLOW).shift(3*DOWN+2*LEFT)
+        Phi2Eq = Tex(r"$\Phi_2$", color=YELLOW).next_to(Phi2).shift(0.3*DOWN+0.1*LEFT)
+        Phi3 = Dot(point=3*d_radial*np.cos(1*d_theta)*RIGHT+3*d_radial*np.sin(1*d_theta)*UP, color=RED).shift(3*DOWN+2*LEFT)
+        Phi3Eq = Tex(r"$\Phi_3$", color=RED).next_to(Phi3)
+        Phi4 = Dot(point=1*d_radial*np.cos(1*d_theta)*RIGHT+1*d_radial*np.sin(1*d_theta)*UP, color=PURPLE).shift(3*DOWN+2*LEFT)
+        Phi4Eq = Tex(r"$\Phi_4$", color=PURPLE).next_to(Phi4)
+        self.play(Create(Phi0), Create(Phi1), Create(Phi2), Create(Phi3), Create(Phi4))
+        self.play(Write(Phi0Eq), Write(Phi1Eq), Write(Phi2Eq), Write(Phi3Eq), Write(Phi4Eq))
+
+        self.wait(1)
+
+        self.play(
+            *[FadeOut(mob) for mob in self.mobjects],
+            # All mobjects in the screen are saved in self.mobjects
+        )
+
+        laplacian_polar = Tex('$\\nabla^2 \\Phi = \\pdv[2]{\\Phi}{r} + \\frac{1}{r} \\pdv{\\Phi}{r} + \\frac{1}{r^2} \\pdv[2]{\\Phi}{\\theta} = 0$', tex_template=Xemplate).shift(1.5*UP)
+
+        self.play(Write(laplacian_polar))
+
+        dPdr = Tex(r"$\odv{\Phi}{r}\rvert_{\left(r_0,\theta_0\right)} = \frac{\Phi\left(r_0+h_r\right)-\Phi\left(r_0-h_r\right)}{2h_r}$", tex_template=Xemplate).shift(0.5*UP)
+        d2Pdr2 = Tex(r"$\odv[2]{\Phi}{r}\rvert_{\left(r_0,\theta_0\right)} = \frac{\Phi\left(r_0+h_r\right)+\Phi\left(r_0-h_r\right)-2\Phi\left(r_0\right)}{h_r^2}$", tex_template=Xemplate).shift(-0.5*UP)
+        d2Pdt2 = Tex(r"$\odv[2]{\Phi}{t}\rvert_{\left(r_0,\theta_0\right)} = \frac{\Phi\left(\theta_0+h_\theta\right)+\Phi\left(\theta_0-h_\theta\right)-2\Phi\left(\theta_0\right)}{\left(h_\theta r_0\right)^2}$", tex_template=Xemplate).shift(-1.5*UP)
+
+        self.play(Write(dPdr), Write(d2Pdr2), Write(d2Pdt2))
+        self.wait(1)
+
+        self.play(
+            *[FadeOut(mob) for mob in self.mobjects],
+            # All mobjects in the screen are saved in self.mobjects
+        )
+
+        final_eq = MathTex(r"\therefore\nabla^2\Phi&=0\\&=\frac{\Phi\left(r_0+h_r,\theta_0\right)+\Phi\left(r_0-h_r,\theta_0\right)-2\Phi\left(r_0,\theta_0\right)}{h_r^2}\\&+\frac{1}{r_0}\frac{\Phi\left(r_0+h_r,\theta_0\right)-\Phi\left(r_0-h_r,\theta_0\right)}{2h_r}\\&+\frac{1}{r_0^2}\frac{\Phi\left(r_0,\theta_0+h_\theta\right)+\Phi\left(r_0,\theta_0-h_\theta\right)-2\Phi\left(r_0,\theta_0\right)}{\left(h_\theta r_0\right)^2}", tex_template=Xemplate)
+        final_eq_numbered = MathTex(r"\therefore\nabla^2\Phi&=0\\&=\frac{\Phi_1+\Phi_2-2\Phi_0}{h_r^2}\\&+\frac{1}{r_0}\frac{\Phi_1-\Phi_2}{2h_r}\\&+\frac{1}{r_0^2}\frac{\Phi_3+\Phi_4-2\Phi_0}{\left(h_\theta r_0\right)^2}", tex_template=Xemplate)
+
+        self.play(Write(final_eq), runtime=3)
+        self.wait(1)
+        self.play(ReplacementTransform(final_eq, final_eq_numbered))
+        self.wait(1)
+
+        assumptions = Tex(r"Asumsikan $h_r\approx h_\theta r_0$ dan uhh\\uhhhhhhhhhhh").shift(3*DOWN)
+        self.play(Write(assumptions))
         self.wait(2)
