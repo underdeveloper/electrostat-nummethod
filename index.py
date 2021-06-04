@@ -295,9 +295,9 @@ class Problem3(Scene):
 
         self.play(Write(laplacian_polar))
 
-        dPdr = Tex(r"$\odv{\Phi}{r}\rvert_{\left(r_0,\theta_0\right)} = \frac{\Phi\left(r_0+h_r\right)-\Phi\left(r_0-h_r\right)}{2h_r}$", tex_template=Xemplate).shift(0.5*UP)
-        d2Pdr2 = Tex(r"$\odv[2]{\Phi}{r}\rvert_{\left(r_0,\theta_0\right)} = \frac{\Phi\left(r_0+h_r\right)+\Phi\left(r_0-h_r\right)-2\Phi\left(r_0\right)}{h_r^2}$", tex_template=Xemplate).shift(-0.5*UP)
-        d2Pdt2 = Tex(r"$\odv[2]{\Phi}{t}\rvert_{\left(r_0,\theta_0\right)} = \frac{\Phi\left(\theta_0+h_\theta\right)+\Phi\left(\theta_0-h_\theta\right)-2\Phi\left(\theta_0\right)}{\left(h_\theta r_0\right)^2}$", tex_template=Xemplate).shift(-1.5*UP)
+        dPdr = Tex(r"$\odv{\Phi}{r}\rvert_{\left(r_0,\theta_0\right)} = \frac{\Phi\left(r_0+h_r,\theta_0\right)-\Phi\left(r_0-h_r,\theta_0\right)}{2h_r}$", tex_template=Xemplate).shift(0.5*UP)
+        d2Pdr2 = Tex(r"$\odv[2]{\Phi}{r}\rvert_{\left(r_0,\theta_0\right)} = \frac{\Phi\left(r_0+h_r,\theta_0\right)+\Phi\left(r_0-h_r,\theta_0\right)-2\Phi\left(r_0,\theta_0\right)}{h_r^2}$", tex_template=Xemplate).shift(-0.5*UP)
+        d2Pdt2 = Tex(r"$\odv[2]{\Phi}{t}\rvert_{\left(r_0,\theta_0\right)} = \frac{\Phi\left(r_0,\theta_0+h_\theta\right)+\Phi\left(r_0,\theta_0-h_\theta\right)-2\Phi\left(r_0,\theta_0\right)}{\left(h_\theta r_0\right)^2}$", tex_template=Xemplate).shift(-1.5*UP)
 
         self.play(Write(dPdr), Write(d2Pdr2), Write(d2Pdt2))
         self.wait(1)
@@ -315,6 +315,126 @@ class Problem3(Scene):
         self.play(ReplacementTransform(final_eq, final_eq_numbered))
         self.wait(1)
 
-        assumptions = Tex(r"Asumsikan $h_r\approx h_\theta r_0$ dan uhh\\uhhhhhhhhhhh").shift(3*DOWN)
+        assumptions = Tex(r"Asumsikan $h = h_r\approx h_\theta r_0$ dan $h \rightarrow 0$").shift(3*DOWN)
         self.play(Write(assumptions))
+        self.wait(2)
+
+class Matrix1(Scene):
+    def construct(self):
+        matrix = Tex(r"$\begin{bmatrix}1&2&3\\2&4&3\\8&1&2\end{bmatrix}\begin{bmatrix}\Phi_0\\\Phi_1\\\Phi_2\end{bmatrix}=\begin{bmatrix}0\\0\\1\end{bmatrix}$")
+        matrix2 = MathTex(r"""
+    \begin{bmatrix}
+        \Phi_0 \\
+        \Phi_1 \\
+        \Phi_2 \\
+        \Phi_3 \\
+        \Phi_4 \\
+        \Phi_5 \\
+        \Phi_6 \\
+        \Phi_7 \\
+        \Phi_8 \\
+        \Phi_9 \\
+        \Phi_{10} \\
+        \Phi_{11} \\
+        \Phi_{12} \\
+        \Phi_{13} \\
+        \Phi_{14} \\
+        \Phi_{15} \\
+        \Phi_{16}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        0 \\
+        0 \\
+        0 \\
+        0 \\
+        16 \\
+        0 \\
+        0 \\
+        0 \\
+        0 \\
+        0 \\
+        0 \\
+        0 \\
+        -16 \\
+        0 \\
+        0 \\
+        0 \\
+        -16
+    \end{bmatrix}""").scale_about_point(0.7, ORIGIN)
+        # self.play(Write(matrix2))
+
+        matrix3 = MathTex(r"""\setcounter{MaxMatrixCols}{17}
+    \begin{bmatrix}
+        -11.5 & 0.5 & 0 & 0 & 0 & 5 & 0 & 0 & 0 & 4 & 0 & 0 & 0 & 2 & 0 & 0 & 0 \\
+        1 & -4 & 1 & 0 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 4 & -10 & 4 & 0 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 9 & -20 & 9 & 0 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 16 & -34 & 0 & 0 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        2.5 & 1 & 0 & 0 & 0 & -15 & 7.5 & 0 & 0 & 4 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 1 & 0 & 0 & 15 & -45 & 25 & 0 & 0 & 4 & 0 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 1 & 0 & 0 & 37.5 & -95 & 52.5 & 0 & 0 & 4 & 0 & 0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 1 & 0 & 0 & 68 & -165 & 0 & 0 & 0 & 4 & 0 & 0 & 0 & 0 \\
+        4 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & -4 & 1 & 0 & 0 & 1 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 4 & -10 & 4 & 0 & 0 & 1 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 9 & -20 & 9 & 0 & 0 & 1 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 16 & -34 & 0 & 0 & 0 & 1 \\
+        1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 2 & 0 & 0 & 0 & -4 & 1 & 0 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 2 & 0 & 0 & 4 & -10 & 4 & 0 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 2 & 0 & 0 & 9 & -20 & 9 \\
+        0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 2 & 0 & 0 & 16 & -34
+    \end{bmatrix}
+    \begin{bmatrix}
+        \Phi_0 \\
+        \Phi_1 \\
+        \Phi_2 \\
+        \Phi_3 \\
+        \Phi_4 \\
+        \Phi_5 \\
+        \Phi_6 \\
+        \Phi_7 \\
+        \Phi_8 \\
+        \Phi_9 \\
+        \Phi_{10} \\
+        \Phi_{11} \\
+        \Phi_{12} \\
+        \Phi_{13} \\
+        \Phi_{14} \\
+        \Phi_{15} \\
+        \Phi_{16}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        0 \\
+        0 \\
+        0 \\
+        0 \\
+        16 \\
+        0 \\
+        0 \\
+        0 \\
+        0 \\
+        0 \\
+        0 \\
+        0 \\
+        -16 \\
+        0 \\
+        0 \\
+        0 \\
+        -16
+    \end{bmatrix}""").scale_about_point(0.45, ORIGIN)
+
+        self.play(Write(matrix3))
+        self.wait(2)
+
+
+class MoM(Scene):
+    def construct(self):
+        # potential3d = MathTex(r"\Phi = \frac{1}{4\pi\epsilon_0} \sum_{i=1}^{n} \frac{Q_i}{r_i}")
+        gauss2d = MathTex(r"\oint_c \epsilon \mathbf{E} \cdot \hat{\mathbf{n}} dl = \oint_c \rho_l dl")
+        # \Leftrightarrow \epsilon E \oint_c dl = \rho_l \Delta l \\
+        # \Leftrightarrow \epsilon E \cdot 2\pi r = \rho_l \Delta l \\
+        # \Leftrightarrow E = \frac{\rho_l \Delta l}{2\pi\epsilon r}
+        # \end{alignat*}""")
+        self.play(Write(gauss2d))
         self.wait(2)
