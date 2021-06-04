@@ -309,6 +309,7 @@ class Problem3(Scene):
 
         final_eq = MathTex(r"\therefore\nabla^2\Phi&=0\\&=\frac{\Phi\left(r_0+h_r,\theta_0\right)+\Phi\left(r_0-h_r,\theta_0\right)-2\Phi\left(r_0,\theta_0\right)}{h_r^2}\\&+\frac{1}{r_0}\frac{\Phi\left(r_0+h_r,\theta_0\right)-\Phi\left(r_0-h_r,\theta_0\right)}{2h_r}\\&+\frac{1}{r_0^2}\frac{\Phi\left(r_0,\theta_0+h_\theta\right)+\Phi\left(r_0,\theta_0-h_\theta\right)-2\Phi\left(r_0,\theta_0\right)}{\left(h_\theta r_0\right)^2}", tex_template=Xemplate)
         final_eq_numbered = MathTex(r"\therefore\nabla^2\Phi&=0\\&=\frac{\Phi_1+\Phi_2-2\Phi_0}{h_r^2}\\&+\frac{1}{r_0}\frac{\Phi_1-\Phi_2}{2h_r}\\&+\frac{1}{r_0^2}\frac{\Phi_3+\Phi_4-2\Phi_0}{\left(h_\theta r_0\right)^2}", tex_template=Xemplate)
+        final_eq_changed = MathTex(r"\therefore\nabla^2\Phi&=0\\&=\frac{\Phi_1+\Phi_2-2\Phi_0}{h^2}\\&+\frac{h}{2r_0}\frac{\Phi_1-\Phi_2}{h^2}\\&+\frac{1}{r_0^2}\frac{\Phi_3+\Phi_4-2\Phi_0}{h^2}", tex_template=Xemplate)
 
         self.play(Write(final_eq), runtime=3)
         self.wait(1)
@@ -317,6 +318,21 @@ class Problem3(Scene):
 
         assumptions = Tex(r"Asumsikan $h = h_r\approx h_\theta r_0$ dan $h \rightarrow 0$").shift(3*DOWN)
         self.play(Write(assumptions))
+        self.wait(1)
+        self.play(ReplacementTransform(final_eq_numbered, final_eq_changed), ApplyMethod(assumptions.shift, 6*UP))
+        self.wait(1)
+
+        rectangle_h_0 = Rectangle(color=YELLOW, height=2, width=3)
+        rectangle_h_1 = Rectangle(color=YELLOW, height=4, width=6)
+        self.play(Create(rectangle_h_0), Create(rectangle_h_1))
+        self.wait(1)
+
+        final_eq_crossed = MathTex(r"\therefore\nabla^2\Phi=0\\=\frac{\Phi_1+\Phi_2-2\Phi_0}{h^2}\\\cancel{+\frac{h}{2r_0}\frac{\Phi_1-\Phi_2}{h^2}}\\+\frac{1}{r_0^2}\frac{\Phi_3+\Phi_4-2\Phi_0}{h^2}", tex_template=Xemplate).scale(0.4)
+        self.play(ReplacementTransform(final_eq_changed, final_eq_crossed), FadeOut(rectangle_h_0), FadeOut(rectangle_h_1))
+
+
+
+
         self.wait(2)
 
 class Matrix1(Scene):
