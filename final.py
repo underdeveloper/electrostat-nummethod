@@ -1,5 +1,7 @@
 from manim import * #pylint: disable=unused-import, unused-wildcard-import
 
+DOT_LABEL_SIZE = 0.12
+
 class MainProblem(Scene):
     def construct(self):
 
@@ -77,9 +79,9 @@ class FDM_part_1(Scene):
         memplate.add_to_preamble(r"\usepackage{gensymb}")
 
         RedArc = Arc(color=RED, start_angle=0, angle=-2*TAU /
-                     3, stroke_width=2*DEFAULT_STROKE_WIDTH)
+                     3, stroke_width=2*DEFAULT_STROKE_WIDTH, radius=2)
         WhiteArc = Arc(color=WHITE, start_angle=-2*TAU/3, angle=-
-                       TAU/3, stroke_width=2*DEFAULT_STROKE_WIDTH)
+                       TAU/3, stroke_width=2*DEFAULT_STROKE_WIDTH, radius=2)
                        
         RedVolt = Tex('$+1V$', color=RED).shift(1.7*LEFT+1.7*DOWN).scale(0.7)
         WhiteVolt = Tex('$-1V$', color=WHITE).shift(1.7*RIGHT+1.7*UP).scale(0.7)
@@ -90,8 +92,9 @@ class FDM_part_1(Scene):
                              angle=TAU/3, outer_radius=2.0)
         
         self.add(RedVolt, WhiteVolt, RedSector, WhiteSector)
+        # BUGGY ALSO WILL BECOME DEPRECATED IN 1.0
         self.foreground_mobjects += RedArc
-        self.foreground_mobjects += WhiteArc
+        self.foreground_mobjects += WhiteArc 
 
         min_theta = 0  # multiple of TAU/20
         max_theta = TAU  # multiple of TAU/20
@@ -111,6 +114,8 @@ class FDM_part_1(Scene):
 
         self.play(Write(deltaAngle))
 
+        self.wait(1)
+
         r = min_r
         while r <= max_r:
             self.play(Create(ParametricFunction(lambda t: np.array((
@@ -123,6 +128,8 @@ class FDM_part_1(Scene):
 
         self.wait(1)
 
+        self.play(FadeOut(deltaAngle), FadeOut(deltaRadius))
+
         dots_oh_my: list[Dot()] = []
         dot_count = 0
 
@@ -130,18 +137,26 @@ class FDM_part_1(Scene):
         r = min_r + 0.4
         while (r < max_r):
             while (theta < max_theta):
-                dots_oh_my.append(Dot(point=(r*np.sin(theta))*UP+(r*np.cos(theta))*RIGHT))
+                dots_oh_my.append(Dot(point=(r*np.sin(theta))*UP+(r*np.cos(theta))*RIGHT, radius=DOT_LABEL_SIZE))
                 self.play(Create(dots_oh_my[dot_count]), run_time=0.1)
                 theta += TAU/6
                 dot_count += 1
             r += 0.4
             theta = min_theta
         
-        dots_oh_my.append(Dot())
-        self.play(Create(dots_oh_my[dot_count]))
+        dots_oh_my.append(Dot(radius=DOT_LABEL_SIZE))
+        self.play(Create(dots_oh_my[dot_count]), runtime=0.1)
         
         self.wait(2)
 
+        # I hate this so much.
+
+        # circle_fdm = Group(*(self.mobjects+self.foreground_mobjects)) # so this DOES work! but does not remove foreground
+        # print(circle_fdm)
+        # self.play(FadeOut(circle_fdm)) # testing out group animations
+
+        # self.wait(1)
+        
         # # ! fadeout
 
         # self.play(
@@ -149,3 +164,38 @@ class FDM_part_1(Scene):
         #     # All mobjects in the screen are saved in self.mobjects
         # )
         # self.wait(1)
+
+class FDM_part_2(Scene):
+    def construct(self):
+        Xemplate = TexTemplate()
+        Xemplate.add_to_preamble(r"\usepackage{gensymb}")
+        Xemplate.add_to_preamble(r"\usepackage{derivative}")
+        Xemplate.add_to_preamble(r"\usepackage{cancel}")
+        Xemplate.add_to_preamble(r"\usepackage{siunitx}")
+
+        deriv1st = Tex(r"$\odv{\Phi}{r}\rvert_{r_0} = \frac{\Phi\left(r_0+h\right)-\Phi\left(r_0-h\right)}{2h}$", tex_template=Xemplate).move_to(0.5*UP)
+        deriv2nd = Tex(r"$\odv[2]{\Phi}{r}\rvert_{r_0} = \frac{\Phi\left(r_0+h\right)+\Phi\left(r_0-h\right)-2\Phi\left(r_0\right)}{h^2}$", tex_template=Xemplate).move_to(-0.5*UP)
+
+        self.play(Write(deriv1st), runtime=2)
+        self.play(Write(deriv2nd), runtime=3)
+        self.wait(1)
+
+        derivs = Group(deriv1st, deriv2nd)      
+        laplacian_phi = Tex('$\\nabla^2 \\Phi = \\pdv[2]{\\Phi}{r} + \\frac{1}{r} \\pdv{\\Phi}{r} + \\frac{1}{r^2} \\pdv[2]{\\Phi}{\\theta} = 0$', tex_template=Xemplate)
+
+        self.play(ApplyMethod(derivs.shift, 3*UP))
+        self.play(Write(laplacian_phi))
+        self.wait(1)
+
+        d2Pdr2 = Tex(r"$\odv[2]{\Phi}{r}\rvert_{\left(r_0,\theta_0\right)} = \frac{\Phi\left(r_0+h_r,\theta_0\right)+\Phi\left(r_0-h_r,\theta_0\right)-2\Phi\left(r_0,\theta_0\right)}{h_r^2}$", tex_template=Xemplate).shift(1*UP)
+        dPdr = Tex(r"$\odv{\Phi}{r}\rvert_{\left(r_0,\theta_0\right)} = \frac{\Phi\left(r_0+h_r,\theta_0\right)-\Phi\left(r_0-h_r,\theta_0\right)}{2h_r}$", tex_template=Xemplate).shift(0*UP)
+        d2Pdt2 = Tex(r"$\odv[2]{\Phi}{t}\rvert_{\left(r_0,\theta_0\right)} = \frac{\Phi\left(r_0,\theta_0+h_\theta\right)+\Phi\left(r_0,\theta_0-h_\theta\right)-2\Phi\left(r_0,\theta_0\right)}{\left(h_\theta r_0\right)^2}$", tex_template=Xemplate).shift(-1*UP)
+
+        self.play(ApplyMethod(laplacian_phi.shift, 3.35*DOWN))
+        d1st_rect = Rectangle(color=YELLOW, height=1, width=1.2).next_to(laplacian_phi, direction=0).shift(0.1*RIGHT)
+        
+        self.play(Transform(deriv2nd, d2Pdr2), Transform(deriv1st, dPdr), Transform(deriv2nd, d2Pdt2))
+        self.play(Indicate(dPdr, scale=1.1), ShowCreationThenDestruction(d1st_rect), runtime=0.7)
+
+
+        self.wait(2)
