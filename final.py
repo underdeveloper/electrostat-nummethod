@@ -187,15 +187,43 @@ class FDM_part_2(Scene):
         self.play(Write(laplacian_phi))
         self.wait(1)
 
-        d2Pdr2 = Tex(r"$\odv[2]{\Phi}{r}\rvert_{\left(r_0,\theta_0\right)} = \frac{\Phi\left(r_0+h_r,\theta_0\right)+\Phi\left(r_0-h_r,\theta_0\right)-2\Phi\left(r_0,\theta_0\right)}{h_r^2}$", tex_template=Xemplate).shift(1*UP)
-        dPdr = Tex(r"$\odv{\Phi}{r}\rvert_{\left(r_0,\theta_0\right)} = \frac{\Phi\left(r_0+h_r,\theta_0\right)-\Phi\left(r_0-h_r,\theta_0\right)}{2h_r}$", tex_template=Xemplate).shift(0*UP)
-        d2Pdt2 = Tex(r"$\odv[2]{\Phi}{t}\rvert_{\left(r_0,\theta_0\right)} = \frac{\Phi\left(r_0,\theta_0+h_\theta\right)+\Phi\left(r_0,\theta_0-h_\theta\right)-2\Phi\left(r_0,\theta_0\right)}{\left(h_\theta r_0\right)^2}$", tex_template=Xemplate).shift(-1*UP)
-
         self.play(ApplyMethod(laplacian_phi.shift, 3.35*DOWN))
-        d1st_rect = Rectangle(color=YELLOW, height=1, width=1.2).next_to(laplacian_phi, direction=0).shift(0.1*RIGHT)
         
-        self.play(Transform(deriv2nd, d2Pdr2), Transform(deriv1st, dPdr), Transform(deriv2nd, d2Pdt2))
-        self.play(Indicate(dPdr, scale=1.1), ShowCreationThenDestruction(d1st_rect), runtime=0.7)
+        d2Pdr2 = Tex(r"$\odv[2]{\Phi}{r}\rvert_{\left(r_0,\theta_0\right)} = \frac{\Phi\left(r_0+h_r,\theta_0\right)+\Phi\left(r_0-h_r,\theta_0\right)-2\Phi\left(r_0,\theta_0\right)}{h_r^2}$", color=BLUE, tex_template=Xemplate).shift(1*UP)
+        dPdr = Tex(r"$\odv{\Phi}{r}\rvert_{\left(r_0,\theta_0\right)} = \frac{\Phi\left(r_0+h_r,\theta_0\right)-\Phi\left(r_0-h_r,\theta_0\right)}{2h_r}$", color=BLUE, tex_template=Xemplate).shift(0*UP)
+        d2Pdt2 = Tex(r"$\odv[2]{\Phi}{t}\rvert_{\left(r_0,\theta_0\right)} = \frac{\Phi\left(r_0,\theta_0+h_\theta\right)+\Phi\left(r_0,\theta_0-h_\theta\right)-2\Phi\left(r_0,\theta_0\right)}{\left(h_\theta r_0\right)^2}$", color=BLUE, tex_template=Xemplate).shift(-1*UP)
+        derivs2 = Group(d2Pdr2, dPdr, d2Pdt2)
+
+        self.play(TransformFromCopy(deriv2nd, d2Pdr2))
+        self.play(TransformFromCopy(deriv1st, dPdr))
+        self.play(TransformFromCopy(deriv2nd, d2Pdt2))
+
+        self.wait(1)
+        
+        laplacian_phi1 = MathTex(r"""
+        \nabla^2 \Phi = 0 &= \pdv[2]{\Phi}{r} \\ 
+        &+ \frac{1}{r} \pdv{\Phi}{r} \\ 
+        &+ \frac{1}{r^2} \pdv[2]{\Phi}{\theta}
+        """, tex_template=Xemplate).shift(2*DOWN)
+
+        self.play(FadeOut(derivs), ApplyMethod(derivs2.shift, 2.15*UP), ReplacementTransform(laplacian_phi, laplacian_phi1))
+
+        # Making this is such a mess. surely there is a better way.
+        d2Pdr2_rect = Rectangle(color=YELLOW, height=1, width=1.3).next_to(laplacian_phi, direction=0).shift(-0.3*RIGHT)
+        
+        self.play(Indicate(d2Pdr2, scale=1.1), ShowCreationThenDestruction(d2Pdr2_rect), runtime=2)
+        self.wait(0.7)
+        
+        laplacian_phi2 = MathTex(r"""
+        \nabla^2 \Phi = 0 &= \frac{\Phi \left(r_0+h_r,\theta_0\right)+\Phi \left(r_0-h_r,\theta_0\right)-2\Phi\left(r_0,\theta_0\right)}{h_r^2} \\ 
+        &+ \frac{1}{r} \pdv{\Phi}{r} \\ 
+        &+ \frac{1}{r^2} \pdv[2]{\Phi}{\theta}
+        """, tex_template=Xemplate).shift(2*DOWN)
+        
+        self.play(ReplacementTransform(laplacian_phi1, laplacian_phi2))
+
+        # dPdr_rect = Rectangle(color=YELLOW, height=1, width=1.2).next_to(laplacian_phi, direction=0).shift(0.1*RIGHT)
+        # self.play(Indicate(dPdr, scale=1.1), ShowCreationThenDestruction(dPdr_rect), runtime=1.3)
 
 
         self.wait(2)
