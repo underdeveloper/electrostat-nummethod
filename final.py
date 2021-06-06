@@ -1156,6 +1156,47 @@ class MOM_part_2(Scene):
         potential5 = MathTex(r"\therefore \Phi = \sum - \frac{\rho_l \Delta l}{2 \pi \epsilon} ln \lvert r - r' \rvert", tex_template=MOMemplate).shift(-3*UP, 3*RIGHT)
         self.play(TransformFromCopy(potential4, potential5))
         self.wait(1)
-        
+
+        self.wait(2)
+
+class MOM_part_3(Scene):
+    def construct(self):
+        arc = ParametricFunction(lambda t: np.array((
+            3*np.cos(t), 3*np.sin(t), 0)), color=RED, t_range=np.array((1*TAU/12, 5*TAU/12)), stroke_width=5*DEFAULT_STROKE_WIDTH).shift(2*DOWN)
+        self.play(Create(arc), run_time=2)
+        self.wait(1)
+
+        point_a = Dot(point=3*np.cos(1*TAU/12)*RIGHT+3*np.sin(1*TAU/12)*UP, radius=2*DOT_LABEL_SIZE).shift(2*DOWN)
+        point_b = Dot(point=3*np.cos(5*TAU/12)*RIGHT+3*np.sin(5*TAU/12)*UP, radius=2*DOT_LABEL_SIZE).shift(2*DOWN)
+
+        label_a = Text("A", size=0.7, color=BLACK).shift(3*np.cos(1*TAU/12)*RIGHT+3*np.sin(1*TAU/12)*UP+2*DOWN)
+        label_b = Text("B", size=0.7, color=BLACK).shift(3*np.cos(5*TAU/12)*RIGHT+3*np.sin(5*TAU/12)*UP+2*DOWN)
+
+        self.play(Create(point_a), Create(point_b))
+        self.play(Write(label_a), Write(label_b))
+
+        self.wait(1)
+
+        arc_group = Group(*self.mobjects)
+
+        self.play(ApplyMethod(arc_group.shift, 4*LEFT))
+
+        potential = MathTex(r"\Phi = \int _{A} ^ {B} - \frac{\rho_l \Delta l}{2 \pi \epsilon} ln \lvert r \rvert dr").shift(3*UP+2.5*RIGHT)
+        self.play(Write(potential))
+
+        potential2 = MathTex(r"\Leftrightarrow \Phi = \int _{-\frac{h_\theta r_0}{2}} ^ {+\frac{h_\theta r_0}{2}} - \frac{\rho_l \Delta l}{2 \pi \epsilon} ln \lvert r \rvert dr").shift(1.2*UP+2.5*RIGHT)
+        self.play(TransformFromCopy(potential, potential2))
+
+        potential_notes = MathTex(r"h_\theta r_0 = 0.1 \frac{\pi}{3}", color=RED).shift(0*UP+2.5*RIGHT)
+        self.play(Write(potential_notes))
+
+        potential3 = MathTex(r"\Rightarrow \Phi = \frac{\rho_l \Delta l}{2 \pi \epsilon} \left( r ln \lvert r \rvert - r\right) \vert _{-0.1 \frac{\pi}{6}} ^{+0.1 \frac{\pi}{6}}").shift(-1.2*UP+2.5*RIGHT)
+        self.play(Write(potential3))
+
+        potential4 = MathTex(r"\therefore \Phi \approx \frac{\rho_l \Delta l}{2 \pi \epsilon} \left( -0.3995 \right)").shift(-2.4*UP+2.5*RIGHT)
+        self.play(TransformFromCopy(potential3, potential4))
+
+        text_this = Text("(ini adalah potensial pada titik singuler)", size=0.4).next_to(potential4, direction=DOWN)
+        self.play(Write(text_this))
 
         self.wait(2)
