@@ -105,8 +105,6 @@ class FDM_part_1(Scene):
         while theta <= max_theta:
             self.play(Create(ParametricFunction(lambda t: np.array((
                 t*np.cos(theta), t*np.sin(theta), 0)), color=GREY, t_min=min_r, t_max=max_r)), run_time=0.2)
-            # self.add(ParametricFunction(lambda t: np.array((
-            #     t*np.cos(theta), t*np.sin(theta), 0)), color=GREY, t_min=min_r, t_max=max_r))
             theta += TAU/6
 
         deltaAngle = Tex('$\\Delta \\Phi = \\frac{\\pi}{3}$').shift(2.5*UP)
@@ -119,9 +117,7 @@ class FDM_part_1(Scene):
         r = min_r
         while r <= max_r:
             self.play(Create(ParametricFunction(lambda t: np.array((
-               r*np.cos(t), r*np.sin(t), 0)), color=GREY, t_min=min_theta, t_max=max_theta)), run_time=0.2)
-            # self.add(ParametricFunction(lambda t: np.array((
-            #     r*np.cos(t), r*np.sin(t), 0)), color=GREY, t_min=min_theta, t_max=max_theta))
+               r*np.cos(t), r*np.sin(t), 0)), color=GREY, t_range=np.array((min_theta, max_theta)))), run_time=0.2)
             r += 0.4
 
         self.play(Write(deltaRadius))
@@ -281,13 +277,13 @@ class FDM_part_3(Scene):
         theta = min_theta
         while theta <= max_theta:
             sector_lines += ParametricFunction(lambda t: np.array((
-                t*np.cos(theta), t*np.sin(theta), 0)), color=BLUE, t_min=min_radial, t_max=max_radial).shift(-2.5*UP+-2*d_radial*RIGHT)
+                t*np.cos(theta), t*np.sin(theta), 0)), color=BLUE, t_range=np.array((min_radial, max_radial))).shift(-2.5*UP+-2*d_radial*RIGHT)
             theta += d_theta
 
         r = min_radial
         while r <= max_radial:
             sector_lines += ParametricFunction(lambda t: np.array((
-               r*np.cos(t), r*np.sin(t), 0)), color=BLUE, t_min=min_theta, t_max=max_theta).shift(-2.5*UP+-2*d_radial*RIGHT)
+               r*np.cos(t), r*np.sin(t), 0)), color=BLUE, t_range=np.array((min_theta, max_theta))).shift(-2.5*UP+-2*d_radial*RIGHT)
             r += d_radial
 
         sector = VGroup(*sector_lines)
@@ -393,6 +389,52 @@ class FDM_part_3(Scene):
 
 class FDM_part_4(Scene):
     def construct(self):
+        d_theta = TAU/12
+        d_radial = 2
+
+        min_theta = 0 * d_theta  # multiple of d_theta
+        max_theta = 2 * d_theta  # multiple of d_theta
+        min_radial = 1 * d_radial # multiple of d_radial
+        max_radial = 3 * d_radial # multiple of d_radial
+
+        sector_lines = []
+
+        theta = min_theta
+        while theta <= max_theta:
+            sector_lines += ParametricFunction(lambda t: np.array((
+                t*np.cos(theta), t*np.sin(theta), 0)), color=BLUE, t_range=np.array((min_radial, max_radial))).shift(-2.5*UP+-2*d_radial*RIGHT)
+            theta += d_theta
+
+        r = min_radial
+        while r <= max_radial:
+            sector_lines += ParametricFunction(lambda t: np.array((
+               r*np.cos(t), r*np.sin(t), 0)), color=BLUE, t_range=np.array((min_theta, max_theta))).shift(-2.5*UP+-2*d_radial*RIGHT)
+            r += d_radial
+
+        sector = VGroup(*sector_lines)
+
+        self.play(Create(sector))
+
+        contour_lines = []
+
+        theta = min_theta + 0.5 * d_theta
+        while theta <= min_theta + 1.5 * d_theta:
+            contour_lines += ParametricFunction(lambda t: np.array((
+                t*np.cos(theta), t*np.sin(theta), 0)), color=RED, t_range=np.array((min_radial + 0.5 * d_radial, min_radial + 1.5 * d_radial))).shift(-2.5*UP+-2*d_radial*RIGHT)
+            theta += d_theta
+
+        r = min_radial + 0.5 * d_radial
+        while r <= min_radial + 1.5 * d_radial:
+            contour_lines += ParametricFunction(lambda t: np.array((
+                r*np.cos(t), r*np.sin(t), 0)), color=RED, t_range=np.array((min_theta + 0.5 * d_theta, min_theta + 1.5 * d_theta))).shift(-2.5*UP+-2*d_radial*RIGHT)
+            r += d_radial
+
+        contour = VGroup(*contour_lines)
+
+        self.play(Create(contour))
+
+        self.wait(2)
+
         return
 
 class FDM_part_5(Scene):
@@ -434,13 +476,13 @@ class FDM_part_5(Scene):
         theta = min_theta
         while theta <= max_theta:
             self.add(ParametricFunction(lambda t: np.array((
-                t*np.cos(theta), t*np.sin(theta), 0)), color=GREY, t_min=min_radial, t_max=max_radial))
+                t*np.cos(theta), t*np.sin(theta), 0)), color=GREY, t_range=np.array((min_radial, max_radial))))
             theta += d_theta
 
         r = min_radial
         while r <= max_radial:
             self.add(ParametricFunction(lambda t: np.array((
-               r*np.cos(t), r*np.sin(t), 0)), color=GREY, t_min=min_theta, t_max=max_theta))
+               r*np.cos(t), r*np.sin(t), 0)), color=GREY, t_range=np.array((min_theta, max_theta))))
             r += d_radial
 
         # these have to be in front of course
@@ -702,13 +744,13 @@ class FDM_part_6(Scene):
         theta = min_theta
         while theta <= max_theta:
             circle.append(ParametricFunction(lambda t: np.array((
-                t*np.cos(theta), t*np.sin(theta), 0)), color=GREY, t_min=min_radial, t_max=max_radial))
+                t*np.cos(theta), t*np.sin(theta), 0)), color=GREY, t_range=np.array((min_radial, max_radial))))
             theta += d_theta
 
         r = min_radial
         while r <= max_radial:
             circle.append(ParametricFunction(lambda t: np.array((
-               r*np.cos(t), r*np.sin(t), 0)), color=GREY, t_min=min_theta, t_max=max_theta))
+               r*np.cos(t), r*np.sin(t), 0)), color=GREY, t_range=np.array((min_theta, max_theta))))
             r += d_radial
 
         # these have to be in front of course
