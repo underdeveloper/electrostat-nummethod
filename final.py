@@ -491,3 +491,256 @@ class FDM_part_5(Scene):
         self.play(FadeOutAndShift(totalGroup, LEFT))
         
         self.wait(2)
+
+class FDM_part_6(Scene):
+    def construct(self):
+        matrix_phi = MathTex(r"""\setcounter{MaxMatrixCols}{17}
+        \begin{bmatrix}
+            -11.5 & 0.5 & 0 & 0 & 0 & 5 & 0 & 0 & 0 & 4 & 0 & 0 & 0 & 2 & 0 & 0 & 0 \\
+            1 & -4 & 1 & 0 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            0 & 4 & -10 & 4 & 0 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            0 & 0 & 9 & -20 & 9 & 0 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            0 & 0 & 0 & 16 & -34 & 0 & 0 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            1.25 & 1 & 0 & 0 & 0 & -10 & 3.75 & 0 & 0 & 4 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            0 & 0 & 1 & 0 & 0 & 7.5 & -25 & 12.5 & 0 & 0 & 4 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            0 & 0 & 0 & 1 & 0 & 0 & 18.75 & -50 & 26.25 & 0 & 0 & 4 & 0 & 0 & 0 & 0 & 0 \\
+            0 & 0 & 0 & 0 & 1 & 0 & 0 & 35 & -85 & 0 & 0 & 0 & 4 & 0 & 0 & 0 & 0 \\
+            4 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & -4 & 1 & 0 & 0 & 1 & 0 & 0 & 0 \\
+            0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 4 & -10 & 4 & 0 & 0 & 1 & 0 & 0 \\
+            0 & 0 & 0 & 0 & 0 & 0 & 0  & 1 & 0 & 0 & 9 & -20 & 9 & 0 & 0 & 1 & 0 \\
+            0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 16 & -34 & 0 & 0 & 0 & 1 \\
+            1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 2 & 0 & 0 & 0 & -4 & 1 & 0 & 0 \\
+            0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 2 & 0 & 0 & 4 & -10 & 4 & 0 \\
+            0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 2 & 0 & 0 & 9 & -20 & 9 \\
+            0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 2 & 0 & 0 & 16 & -34
+        \end{bmatrix}
+        \begin{bmatrix}
+            \Phi_0 \\
+            \Phi_1 \\
+            \Phi_2 \\
+            \Phi_3 \\
+            \Phi_4 \\
+            \Phi_5 \\
+            \Phi_6 \\
+            \Phi_7 \\
+            \Phi_8 \\
+            \Phi_9 \\
+            \Phi_{10} \\
+            \Phi_{11} \\
+            \Phi_{12} \\
+            \Phi_{13} \\
+            \Phi_{14} \\
+            \Phi_{15} \\
+            \Phi_{16}
+        \end{bmatrix}
+        =
+        \begin{bmatrix}
+            0 \\
+            0 \\
+            0 \\
+            0 \\
+            16 \\
+            0 \\
+            0 \\
+            0 \\
+            0 \\
+            0 \\
+            0 \\
+            0 \\
+            -16 \\
+            0 \\
+            0 \\
+            0 \\
+            -16
+        \end{bmatrix}        
+        """).scale_about_point(0.45, ORIGIN)
+        
+        self.play(Write(matrix_phi))
+
+        self.wait(2)
+
+        matrix_phi2 = MathTex(r"""\setcounter{MaxMatrixCols}{17}
+        \begin{bmatrix}
+            \Phi_0 \\
+            \Phi_1 \\
+            \Phi_2 \\
+            \Phi_3 \\
+            \Phi_4 \\
+            \Phi_5 \\
+            \Phi_6 \\
+            \Phi_7 \\
+            \Phi_8 \\
+            \Phi_9 \\
+            \Phi_{10} \\
+            \Phi_{11} \\
+            \Phi_{12} \\
+            \Phi_{13} \\
+            \Phi_{14} \\
+            \Phi_{15} \\
+            \Phi_{16}
+        \end{bmatrix}
+        =
+        \begin{bmatrix}
+            -11.5 & 0.5 & 0 & 0 & 0 & 5 & 0 & 0 & 0 & 4 & 0 & 0 & 0 & 2 & 0 & 0 & 0 \\
+            1 & -4 & 1 & 0 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            0 & 4 & -10 & 4 & 0 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            0 & 0 & 9 & -20 & 9 & 0 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            0 & 0 & 0 & 16 & -34 & 0 & 0 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            1.25 & 1 & 0 & 0 & 0 & -10 & 3.75 & 0 & 0 & 4 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            0 & 0 & 1 & 0 & 0 & 7.5 & -25 & 12.5 & 0 & 0 & 4 & 0 & 0 & 0 & 0 & 0 & 0 \\
+            0 & 0 & 0 & 1 & 0 & 0 & 18.75 & -50 & 26.25 & 0 & 0 & 4 & 0 & 0 & 0 & 0 & 0 \\
+            0 & 0 & 0 & 0 & 1 & 0 & 0 & 35 & -85 & 0 & 0 & 0 & 4 & 0 & 0 & 0 & 0 \\
+            4 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & -4 & 1 & 0 & 0 & 1 & 0 & 0 & 0 \\
+            0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 4 & -10 & 4 & 0 & 0 & 1 & 0 & 0 \\
+            0 & 0 & 0 & 0 & 0 & 0 & 0  & 1 & 0 & 0 & 9 & -20 & 9 & 0 & 0 & 1 & 0 \\
+            0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 16 & -34 & 0 & 0 & 0 & 1 \\
+            1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 2 & 0 & 0 & 0 & -4 & 1 & 0 & 0 \\
+            0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 2 & 0 & 0 & 4 & -10 & 4 & 0 \\
+            0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 2 & 0 & 0 & 9 & -20 & 9 \\
+            0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 2 & 0 & 0 & 16 & -34
+        \end{bmatrix} ^{-1}
+        \begin{bmatrix}
+            0 \\
+            0 \\
+            0 \\
+            0 \\
+            16 \\
+            0 \\
+            0 \\
+            0 \\
+            0 \\
+            0 \\
+            0 \\
+            0 \\
+            -16 \\
+            0 \\
+            0 \\
+            0 \\
+            -16
+        \end{bmatrix}        
+        """).scale_about_point(0.45, ORIGIN)
+
+        self.play(ReplacementTransform(matrix_phi, matrix_phi2))
+        self.wait(2)
+
+        matrix_phi3 = MathTex(r"""\setcounter{MaxMatrixCols}{17}
+        \begin{bmatrix}
+            \Phi_0 \\
+            \Phi_1 \\
+            \Phi_2 \\
+            \Phi_3 \\
+            \Phi_4 \\
+            \Phi_5 \\
+            \Phi_6 \\
+            \Phi_7 \\
+            \Phi_8 \\
+            \Phi_9 \\
+            \Phi_{10} \\
+            \Phi_{11} \\
+            \Phi_{12} \\
+            \Phi_{13} \\
+            \Phi_{14} \\
+            \Phi_{15} \\
+            \Phi_{16}
+        \end{bmatrix}
+        =
+        \begin{bmatrix}
+            0.4424 \\
+            0.3509 \\
+            0.1489 \\
+            -0.1479 \\
+            -0.5323 \\
+            0.4062 \\
+            0.3384 \\
+            0.2466 \\
+            0.1334 \\
+            0.4724 \\
+            0.5454 \\
+            0.6579 \\
+            0.8093 \\
+            0.4955 \\
+            0.5948 \\
+            0.7189 \\
+            0.8565 
+        \end{bmatrix}
+        """).scale_about_point(0.55, ORIGIN)
+
+        self.play(ReplacementTransform(matrix_phi2, matrix_phi3))
+        self.wait(2)
+
+
+        # argh!
+        
+        # ! Adding the circle
+
+        circle: list[VMobject] = []
+
+        CIRCLE_RADIUS = 3
+
+        RedArc = Arc(color=RED, start_angle=0, angle=-2*TAU /
+                     3, stroke_width=2*DEFAULT_STROKE_WIDTH, radius=CIRCLE_RADIUS)
+        WhiteArc = Arc(color=WHITE, start_angle=-2*TAU/3, angle=-
+                       TAU/3, stroke_width=2*DEFAULT_STROKE_WIDTH, radius=CIRCLE_RADIUS)
+  
+        RedSector = Sector(color='#021a00', start_angle=0,
+                           angle=-2*TAU/3, outer_radius=CIRCLE_RADIUS)
+        WhiteSector = Sector(color='#0f0e12', start_angle=0,
+                             angle=TAU/3, outer_radius=CIRCLE_RADIUS)
+
+        circle += [RedSector, WhiteSector]
+
+        # Adding the radial and angular lines
+
+        d_theta = TAU/6
+        d_radial = CIRCLE_RADIUS / 5
+
+        min_theta = 0 * d_theta  # multiple of d_theta
+        max_theta = 6 * d_theta  # multiple of d_theta
+        min_radial = 0 * d_radial # multiple of d_radial
+        max_radial = 5 * d_radial # multiple of d_radial
+
+        theta = min_theta
+        while theta <= max_theta:
+            circle.append(ParametricFunction(lambda t: np.array((
+                t*np.cos(theta), t*np.sin(theta), 0)), color=GREY, t_min=min_radial, t_max=max_radial))
+            theta += d_theta
+
+        r = min_radial
+        while r <= max_radial:
+            circle.append(ParametricFunction(lambda t: np.array((
+               r*np.cos(t), r*np.sin(t), 0)), color=GREY, t_min=min_theta, t_max=max_theta))
+            r += d_radial
+
+        # these have to be in front of course
+        circle+= [RedArc, WhiteArc]
+
+        # The dots!
+
+        dots_oh_my: list[Dot()] = []
+        lables_oh_my: list[Text()] = []
+        dot_count = 0
+
+        theta = min_theta + d_theta
+        r = min_radial + d_radial
+        while (theta < max_theta+d_radial): 
+            while (r < max_radial):
+                dots_oh_my.append(Dot(point=(r*np.sin(theta))*UP+(r*np.cos(theta))*RIGHT, radius=1.5*DOT_LABEL_SIZE))
+                lables_oh_my.append(Text(text=str(dot_count+1 if dot_count<=15 else (dot_count-7 if dot_count <= 19 else dot_count-15)), size=0.3, color=BLACK).next_to(dots_oh_my[dot_count], direction=0))
+                circle.append(dots_oh_my[dot_count])
+                circle.append(lables_oh_my[dot_count])
+                r += d_radial
+                dot_count += 1
+            r = min_theta + d_radial
+            theta += d_theta
+        
+        dots_oh_my.append(Dot(radius=1.5*DOT_LABEL_SIZE))
+        lables_oh_my.append(Text(text=str(0), size=0.3, color=BLACK).next_to(dots_oh_my[dot_count], direction=0))
+        circle.append(dots_oh_my[dot_count])
+        circle.append(lables_oh_my[dot_count])
+
+        circleGroup = VGroup(*circle)
+
+        self.play(ApplyMethod(matrix_phi3.shift, 4*LEFT), run_time=0.7)
+        self.play(Create(circleGroup.shift(2*RIGHT)), run_time=2)
+
+        self.wait(2)
