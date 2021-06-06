@@ -249,3 +249,142 @@ class FDM_part_2(Scene):
         self.play(ApplyMethod(laplacian_phi4.move_to, ORIGIN), FadeOut(derivs2))
 
         self.wait(2)
+
+class FDM_part_3(Scene):
+    def construct(self):
+        Xemplate = TexTemplate()
+        Xemplate.add_to_preamble(r"\usepackage{gensymb}")
+        Xemplate.add_to_preamble(r"\usepackage{derivative}")
+        Xemplate.add_to_preamble(r"\usepackage{cancel}")
+        Xemplate.add_to_preamble(r"\usepackage{siunitx}")
+
+        laplacian = MathTex(r"""
+        \nabla^2 \Phi = 0 &= \frac{\Phi \left(r_0+h_r,\theta_0\right)+\Phi \left(r_0-h_r,\theta_0\right)-2\Phi\left(r_0,\theta_0\right)}{h_r^2} \\ 
+        &+ \frac{1}{r_0}\frac{\Phi\left(r_0+h_r,\theta_0\right)-\Phi\left(r_0-h_r,\theta_0\right)}{2h_r} \\ 
+        &+ \frac{1}{r_0^2}\frac{\Phi\left(r_0,\theta_0+h_\theta\right)+\Phi\left(r_0,\theta_0-h_\theta\right)-2\Phi\left(r_0,\theta_0\right)}{\left(h_\theta r_0\right)^2}
+        """, tex_template=Xemplate)
+        
+        self.add(laplacian)
+        self.play(ApplyMethod(laplacian.scale, 0.7))
+        self.play(ApplyMethod(laplacian.shift, 2.3*UP))
+
+        d_theta = TAU/24
+        d_radial = 2
+
+        min_theta = 0 * d_theta  # multiple of d_theta
+        max_theta = 2 * d_theta  # multiple of d_theta
+        min_radial = 1 * d_radial # multiple of d_radial
+        max_radial = 3 * d_radial # multiple of d_radial
+
+        sector_lines = []
+
+        theta = min_theta
+        while theta <= max_theta:
+            sector_lines += ParametricFunction(lambda t: np.array((
+                t*np.cos(theta), t*np.sin(theta), 0)), color=BLUE, t_min=min_radial, t_max=max_radial).shift(-2.5*UP+-2*d_radial*RIGHT)
+            theta += d_theta
+
+        r = min_radial
+        while r <= max_radial:
+            sector_lines += ParametricFunction(lambda t: np.array((
+               r*np.cos(t), r*np.sin(t), 0)), color=BLUE, t_min=min_theta, t_max=max_theta).shift(-2.5*UP+-2*d_radial*RIGHT)
+            r += d_radial
+
+        sector = VGroup(*sector_lines)
+
+        self.play(Create(sector), run_time=2.5)
+
+        Phi0 = Dot(color=WHITE).next_to(sector, direction=0).shift(0.45*DOWN)
+        Phi0Eq = Tex(r"$\Phi_0\left(r_0,\theta_0\right)$", color=WHITE).scale(0.75).next_to(Phi0).shift(0.2*LEFT+0.2*DOWN)
+        Phi1 = Dot(color=GREEN).next_to(Phi0, direction=0).shift(
+            # shift to "origin" of polar plot
+            d_radial*np.sin(d_theta)*-2*UP+d_radial*np.cos(d_theta)*-2*RIGHT  
+            # shift to correct position on the polar plot
+            + d_radial*np.sin(2*d_theta)*2*UP+d_radial*np.cos(2*d_theta)*2*RIGHT  
+            )
+        Phi1Eq = Tex(r"$\Phi_1\left(r_0,\theta_0+h_\theta\right)$", color=GREEN).scale(0.75).next_to(Phi1, direction=LEFT).shift(0.2*RIGHT+0.2*UP)
+        Phi2 = Dot(color=YELLOW).next_to(Phi0, direction=0).shift(
+            # shift to "origin" of polar plot
+            d_radial*np.sin(d_theta)*-2*UP+d_radial*np.cos(d_theta)*-2*RIGHT  
+            # shift to correct position on the polar plot
+            + d_radial*np.sin(0*d_theta)*2*UP+d_radial*np.cos(0*d_theta)*2*RIGHT  
+            )
+        Phi2Eq = Tex(r"$\Phi_2\left(r_0,\theta_0-h_\theta\right)$", color=YELLOW).scale(0.75).next_to(Phi2).shift(0.2*LEFT+0.3*DOWN)
+        Phi3 = Dot(color=RED).next_to(Phi0, direction=0).shift(
+            d_radial*np.sin(d_theta)*UP+d_radial*np.cos(d_theta)*RIGHT
+            )
+        Phi3Eq = Tex(r"$\Phi_3\left(r_0+h_r,\theta_0\right)$", color=RED).scale(0.75).next_to(Phi3).shift(0.2*LEFT+0.2*DOWN)
+        Phi4 = Dot(color=PURPLE).next_to(Phi0, direction=0).shift(
+            d_radial*np.sin(d_theta)*-1*UP+d_radial*np.cos(d_theta)*-1*RIGHT
+            )
+        Phi4Eq = Tex(r"$\Phi_4\left(r_0-h_r,\theta_0\right)$", color=PURPLE).scale(0.75).next_to(Phi4).shift(0.2*LEFT+0.2*DOWN)
+        self.play(Create(Phi0), Create(Phi1), Create(Phi2), Create(Phi3), Create(Phi4))
+        self.play(Write(Phi0Eq), Write(Phi1Eq), Write(Phi2Eq), Write(Phi3Eq), Write(Phi4Eq))
+
+        self.wait(1)
+
+        laplacian_numbered = MathTex(r"""
+        \nabla^2 \Phi = 0 &= \frac{\Phi_1+\Phi_2-2\Phi_0}{h_r^2} \\ 
+        &+ \frac{1}{r_0}\frac{\Phi_1-\Phi_2}{2h_r} \\ 
+        &+ \frac{1}{r_0^2}\frac{\Phi_3+\Phi_4-2\Phi_0}{\left(h_\theta r_0\right)^2}
+        """, tex_template=Xemplate).scale(0.7).shift(2.3*UP+2*LEFT)
+
+        self.play(ReplacementTransform(laplacian, laplacian_numbered))
+
+        approximation = MathTex(r"h_r \approx h_\theta r_0 = h \rightarrow 0", template=Xemplate).scale(0.7).next_to(laplacian_numbered)
+        
+        self.play(Write(approximation), run_time= 4)
+
+        self.wait(1)
+
+        laplacian_reordered = MathTex(r"""
+        \nabla^2 \Phi = 0 &= \frac{\Phi_1+\Phi_2-2\Phi_0}{h^2} \\ 
+        &+ \frac{h}{2r_0}\frac{\Phi_1-\Phi_2}{h^2} \\ 
+        &+ \frac{1}{r_0^2}\frac{\Phi_3+\Phi_4-2\Phi_0}{h^2}
+        """, tex_template=Xemplate).scale(0.7).shift(2.3*UP+2*LEFT)
+
+        self.play(ReplacementTransform(laplacian_numbered, laplacian_reordered))
+
+        self.wait(1)
+
+        laplacian_reordered2 = MathTex(r"""
+        0 &= \Phi_1+\Phi_2-2\Phi_0 \\ 
+        &+ \frac{h}{2r_0} \left( \Phi_1-\Phi_2 \right) \\ 
+        &+ \frac{1}{r_0^2} \left( \Phi_3+\Phi_4-2\Phi_0 \right)
+        """, tex_template=Xemplate).scale(0.7).shift(2.3*UP+2*LEFT)
+
+        self.play(ReplacementTransform(laplacian_reordered, laplacian_reordered2))
+        
+        self.wait(1)
+
+        laplacian_reordered3 = MathTex(r"""
+        0 &= \Phi_1+\Phi_2-2\Phi_0 \\ 
+        &+ \cancel{\frac{h}{2r_0} \left( \Phi_1-\Phi_2 \right)} \\ 
+        &+ \frac{1}{r_0^2} \left( \Phi_3+\Phi_4-2\Phi_0 \right)
+        """, tex_template=Xemplate).scale(0.7).shift(2.3*UP+2*LEFT)
+
+        self.play(Indicate(approximation), ReplacementTransform(laplacian_reordered2, laplacian_reordered3))
+
+        self.wait(1)
+
+        laplacian_reordered4 = MathTex(r"""
+        0 &= \Phi_1+\Phi_2-2\Phi_0 \\ 
+        &+ \frac{1}{r_0^2} \left( \Phi_3+\Phi_4-2\Phi_0 \right)
+        """, tex_template=Xemplate).scale(0.7).shift(2.3*UP+2*LEFT)
+
+        self.play(ReplacementTransform(laplacian_reordered3, laplacian_reordered4))
+
+        self.wait(1)
+
+        laplacian_final = MathTex(r"""
+        0 = \Phi_1+\Phi_2-2\Phi_0
+        + \frac{1}{r_0^2} \left( \Phi_3+\Phi_4-2\Phi_0 \right)
+        """, tex_template=Xemplate).shift(2.5*UP)
+
+        self.play(FadeOut(approximation), ReplacementTransform(laplacian_reordered4, laplacian_final))
+
+        laplacian_text = Text("Ini adalah rumus pencarian potensial \nuntuk daerah permitivitas homogen.", size=0.7).next_to(laplacian_final, direction=DOWN)
+        
+        self.play(Write(laplacian_text))
+
+        self.wait(2)
