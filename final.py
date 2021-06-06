@@ -204,26 +204,48 @@ class FDM_part_2(Scene):
         \nabla^2 \Phi = 0 &= \pdv[2]{\Phi}{r} \\ 
         &+ \frac{1}{r} \pdv{\Phi}{r} \\ 
         &+ \frac{1}{r^2} \pdv[2]{\Phi}{\theta}
-        """, tex_template=Xemplate).shift(2*DOWN)
+        """, tex_template=Xemplate).shift(1.8*DOWN)
 
         self.play(FadeOut(derivs), ApplyMethod(derivs2.shift, 2.15*UP), ReplacementTransform(laplacian_phi, laplacian_phi1))
+        self.wait(1)
 
         # Making this is such a mess. surely there is a better way.
-        d2Pdr2_rect = Rectangle(color=YELLOW, height=1, width=1.3).next_to(laplacian_phi, direction=0).shift(-0.3*RIGHT)
+        d2Pdr2_rect = Rectangle(color=YELLOW, height=1.22, width=1).next_to(laplacian_phi1, direction=0).shift(1.25*UP+1.05*RIGHT)
         
-        self.play(Indicate(d2Pdr2, scale=1.1), ShowCreationThenDestruction(d2Pdr2_rect), runtime=2)
-        self.wait(0.7)
+        self.play(Indicate(d2Pdr2, scale=1.1), ShowCreationThenDestruction(d2Pdr2_rect, run_time= 1.5))
         
         laplacian_phi2 = MathTex(r"""
         \nabla^2 \Phi = 0 &= \frac{\Phi \left(r_0+h_r,\theta_0\right)+\Phi \left(r_0-h_r,\theta_0\right)-2\Phi\left(r_0,\theta_0\right)}{h_r^2} \\ 
         &+ \frac{1}{r} \pdv{\Phi}{r} \\ 
         &+ \frac{1}{r^2} \pdv[2]{\Phi}{\theta}
-        """, tex_template=Xemplate).shift(2*DOWN)
+        """, tex_template=Xemplate).shift(1.8*DOWN)
         
         self.play(ReplacementTransform(laplacian_phi1, laplacian_phi2))
 
-        # dPdr_rect = Rectangle(color=YELLOW, height=1, width=1.2).next_to(laplacian_phi, direction=0).shift(0.1*RIGHT)
-        # self.play(Indicate(dPdr, scale=1.1), ShowCreationThenDestruction(dPdr_rect), runtime=1.3)
+        dPdr_rect = Rectangle(color=YELLOW, height=1.22, width=0.8).next_to(laplacian_phi, direction=0).shift(-2.83*RIGHT+-0.05*UP)
+        self.play(Indicate(dPdr, scale=1.1), ShowCreationThenDestruction(dPdr_rect, run_time= 1.5))
 
+        laplacian_phi3 = MathTex(r"""
+        \nabla^2 \Phi = 0 &= \frac{\Phi \left(r_0+h_r,\theta_0\right)+\Phi \left(r_0-h_r,\theta_0\right)-2\Phi\left(r_0,\theta_0\right)}{h_r^2} \\ 
+        &+ \frac{1}{r_0}\frac{\Phi\left(r_0+h_r,\theta_0\right)-\Phi\left(r_0-h_r,\theta_0\right)}{2h_r} \\ 
+        &+ \frac{1}{r^2} \pdv[2]{\Phi}{\theta}
+        """, tex_template=Xemplate).shift(1.8*DOWN)
+
+        self.play(ReplacementTransform(laplacian_phi2, laplacian_phi3))
+
+        d2Pdt2_rect = Rectangle(color=YELLOW, height=1.22, width=0.9).next_to(laplacian_phi, direction=0).shift(-2.53*RIGHT+-1.37*UP)
+        self.play(Indicate(d2Pdt2, scale=1.1), ShowCreationThenDestruction(d2Pdt2_rect, run_time= 1.5))
+
+        laplacian_phi4 = MathTex(r"""
+        \nabla^2 \Phi = 0 &= \frac{\Phi \left(r_0+h_r,\theta_0\right)+\Phi \left(r_0-h_r,\theta_0\right)-2\Phi\left(r_0,\theta_0\right)}{h_r^2} \\ 
+        &+ \frac{1}{r_0}\frac{\Phi\left(r_0+h_r,\theta_0\right)-\Phi\left(r_0-h_r,\theta_0\right)}{2h_r} \\ 
+        &+ \frac{1}{r_0^2}\frac{\Phi\left(r_0,\theta_0+h_\theta\right)+\Phi\left(r_0,\theta_0-h_\theta\right)-2\Phi\left(r_0,\theta_0\right)}{\left(h_\theta r_0\right)^2}
+        """, tex_template=Xemplate).shift(1.8*DOWN)
+
+        self.play(ReplacementTransform(laplacian_phi3, laplacian_phi4))
+
+        self.wait(1)
+
+        self.play(ApplyMethod(laplacian_phi4.move_to, ORIGIN), FadeOut(derivs2))
 
         self.wait(2)
