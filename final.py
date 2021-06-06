@@ -70,6 +70,8 @@ class MainProblem(Scene):
         # )
         # self.wait(2)
 
+# ! Finite Difference Method
+
 class FDM_part_1(Scene):
     def construct(self):
         
@@ -879,3 +881,104 @@ class FDM_part_6(Scene):
         self.wait(2)
 
 # !! TODO: PART 7 of FDM (capacitance)
+
+class FDM_part_7(Scene):
+    def construct(self):
+        return
+
+# ! Method of Moments
+
+class MOM_part_1(Scene):
+    def construct(self):
+        CIRCLE_RADIUS = 3
+
+        # Adding the circle
+
+        RedArc = Arc(color=RED, start_angle=0, angle=-2*TAU /
+                     3, stroke_width=4*DEFAULT_STROKE_WIDTH, radius=CIRCLE_RADIUS)
+        WhiteArc = Arc(color=WHITE, start_angle=-2*TAU/3, angle=-
+                       TAU/3, stroke_width=4*DEFAULT_STROKE_WIDTH, radius=CIRCLE_RADIUS)
+                       
+        RedSector = Sector(color='#021a00', start_angle=0,
+                           angle=-2*TAU/3, outer_radius=CIRCLE_RADIUS)
+        WhiteSector = Sector(color='#0f0e12', start_angle=0,
+                             angle=TAU/3, outer_radius=CIRCLE_RADIUS)
+
+        self.play(Create(RedSector), Create(WhiteSector), run_time=0.7)
+
+        # Adding the radial and angular lines
+
+        d_theta = TAU/6
+        d_radial = CIRCLE_RADIUS / 5
+
+        min_theta = 0 * d_theta  # multiple of d_theta
+        max_theta = 6 * d_theta  # multiple of d_theta
+        min_radial = 0 * d_radial # multiple of d_radial
+        max_radial = 5 * d_radial # multiple of d_radial
+
+        # dont need this just yet methinks
+
+        theta = min_theta
+        while theta <= max_theta:
+            self.play(Create(ParametricFunction(lambda t: np.array((
+                t*np.cos(theta), t*np.sin(theta), 0)), color=GREY, t_range=np.array((min_radial, max_radial)))), run_time=0.2)
+            theta += d_theta
+
+        r = min_radial
+        while r <= max_radial:
+            self.play(Create(ParametricFunction(lambda t: np.array((
+               r*np.cos(t), r*np.sin(t), 0)), color=GREY, t_range=np.array((min_theta, max_theta)))), run_time=0.2)
+            r += d_radial
+
+        # these have to be in front of course
+        self.play(Create(RedArc), Create(WhiteArc), run_time=0.4)
+
+        circle = VGroup(*self.mobjects)
+
+        segment_colours = ["#222222", "#555555", "#AAAAAA", "#AAFFAA", "#55FF55", "#22FF22"]
+        segments: list[ParametricFunction] = []
+        rhos: list[Tex] = []
+        charges: list[Dot] = []
+
+        theta = min_theta+d_theta
+        i = 0
+        while theta < max_theta:
+            segments.append(ParametricFunction(lambda t: np.array((
+                (max_radial)*np.cos(t), (max_radial)*np.sin(t), 0)), color=segment_colours[i], t_range=np.array((theta, theta+d_theta)), stroke_width=1.5*DEFAULT_STROKE_WIDTH))
+            charges.append(Dot((max_radial)*np.cos(theta+d_theta/2)*RIGHT + (max_radial)*np.sin(theta+d_theta/2)*UP, color=BLUE_C))
+            rhos.append(MathTex(r"Q_" + str(i+1), size=0.4, color=BLUE_C).move_to((max_radial+0.5)*np.cos(theta+d_theta/2)*RIGHT + (max_radial+0.5)*np.sin(theta+d_theta/2)*UP))
+            
+            theta += d_theta
+            i += 1
+        
+        segmentsGroup = VGroup(*segments)
+        rhosGroup = VGroup(*rhos)
+        chargesGroup = VGroup(*charges)
+
+        self.play(Create(segmentsGroup), run_time=1.5)
+        self.play(Write(rhosGroup), Create(chargesGroup))
+
+        self.wait(2)
+
+        dots_oh_my: list[Dot()] = []
+        lables_oh_my: list[Text()] = []
+        dot_count = 0
+
+        theta = min_theta + d_theta
+        r = min_radial + d_radial
+        while (theta < max_theta+d_radial): 
+            while (r < max_radial):
+                dots_oh_my.append(Dot(point=(r*np.sin(theta))*UP+(r*np.cos(theta))*RIGHT, radius=1.5*DOT_LABEL_SIZE))
+                lables_oh_my.append(Text(text=str(dot_count+1), size=0.3, color=BLACK).next_to(dots_oh_my[dot_count], direction=0))
+                self.play(Create(dots_oh_my[dot_count]), Write(lables_oh_my[dot_count]), run_time=0.05)
+                r += d_radial
+                dot_count += 1
+            r = min_theta + d_radial
+            theta += d_theta
+        
+        dots_oh_my.append(Dot(radius=1.5*DOT_LABEL_SIZE))
+        lables_oh_my.append(Text(text=str(0), size=0.3, color=BLACK).next_to(dots_oh_my[dot_count], direction=0))
+        self.play(Create(dots_oh_my[dot_count]), Write(lables_oh_my[dot_count]), runtime=0.05)
+
+        self.wait(2)
+
