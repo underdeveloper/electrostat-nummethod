@@ -1,4 +1,5 @@
-from manim import * #pylint: disable=unused-import, unused-wildcard-import
+from manim import *
+from manim.utils import tex_templates #pylint: disable=unused-import, unused-wildcard-import
 
 DOT_LABEL_SIZE = 0.12
 
@@ -888,6 +889,115 @@ class FDM_part_6(Scene):
 
 class FDM_part_7(Scene):
     def construct(self):
+        CIRCLE_RADIUS = 3
+
+        d_theta = TAU/6
+        d_radial = CIRCLE_RADIUS / 5
+
+        min_theta = 0 * d_theta  # multiple of d_theta
+        max_theta = 6 * d_theta  # multiple of d_theta
+        min_radial = 0 * d_radial # multiple of d_radial
+        max_radial = 7 * d_radial # multiple of d_radial
+
+        radial_theta_lines = []
+
+        theta = min_theta
+        while theta <= max_theta:
+            radial_theta_lines.append(ParametricFunction(lambda t: np.array((
+                t*np.cos(theta), t*np.sin(theta), 0)), color=GREY, t_range=np.array((min_radial, max_radial)), stroke_width=0.75*DEFAULT_STROKE_WIDTH))
+            theta += d_theta
+
+        r = min_radial
+        while r <= max_radial:
+            radial_theta_lines.append(ParametricFunction(lambda t: np.array((
+               r*np.cos(t), r*np.sin(t), 0)), color=GREY, t_range=np.array((min_theta, max_theta)), stroke_width=0.75*DEFAULT_STROKE_WIDTH))
+            r += d_radial
+
+        lines = VGroup(*radial_theta_lines)
+
+        RedArc = Arc(color=RED, start_angle=0, angle=-2*TAU /
+                     3, stroke_width=2*DEFAULT_STROKE_WIDTH, radius=CIRCLE_RADIUS)
+        WhiteArc = Arc(color=WHITE, start_angle=-2*TAU/3, angle=-
+                       TAU/3, stroke_width=2*DEFAULT_STROKE_WIDTH, radius=CIRCLE_RADIUS)
+        
+        RedSector = Sector(color='#021a00', start_angle=0,
+                           angle=-2*TAU/3, outer_radius=CIRCLE_RADIUS)
+        WhiteSector = Sector(color='#0f0e12', start_angle=0,
+                             angle=TAU/3, outer_radius=CIRCLE_RADIUS)
+
+        self.play(Create(RedSector), Create(WhiteSector), Create(lines))
+        self.play(Create(RedArc), Create(WhiteArc))
+        
+        self.wait(1)
+
+        BlueCircle = Circle(color=BLUE, radius=0.3*np.sqrt(75)).shift(0.3*(5/2)*RIGHT+0.3*(13/3)*UP)
+
+        self.play(Create(BlueCircle))
+
+        self.wait(1)
+
+        circle = Group(*self.mobjects)
+
+        self.play(ApplyMethod(circle.scale, 0.5))
+        self.play(ApplyMethod(circle.shift, 4*LEFT+UP))
+        self.play(Uncreate(lines), Uncreate(BlueCircle))
+        self.wait(1)
+
+        Xemplate = TexTemplate()
+        Xemplate.add_to_preamble(r"\usepackage{gensymb}")
+        Xemplate.add_to_preamble(r"\usepackage{derivative}")
+        Xemplate.add_to_preamble(r"\usepackage{cancel}")
+        Xemplate.add_to_preamble(r"\usepackage{siunitx}")
+
+        gauss = MathTex(r"\oint_c \epsilon \mathbf{E} \cdot \mathbf{dl} = q\\\mathbf{E} = -\mathbf{\nabla}\Phi",tex_template=Xemplate).shift(2*RIGHT+2*UP)
+
+        gauss2 = MathTex(r"""\therefore q &= \oint_c \epsilon \left( -\mathbf{\nabla}\Phi \right) \cdot \mathbf{dl} \\
+            &= \oint_c \epsilon \mathbf{\nabla}\Phi \cdot \mathbf{dl} \\
+            &= \oint_c \epsilon \pdv{\Phi}{n} dl
+            """, tex_template=Xemplate).shift(2*RIGHT+1*DOWN)
+
+        capacitance = MathTex(r"C = \frac{q}{V}", tex_template=Xemplate).shift(-4*RIGHT+2.5*DOWN)
+
+        self.play(Write(gauss))
+
+        self.play(Write(gauss2))
+
+        self.play(Write(capacitance))
+
+        self.wait(2)
+
+        cap_calc = MathTex(r"""q &=
+        2\frac{-0.479 + 0.7296}{h_r}(\frac{5\sqrt{3}}{4}\epsilon_0h_r) \\
+        &+\frac{-0.479 + 0.7487}{h_r}(\frac{5\sqrt{3}}{4}\epsilon_0h_r)\\
+        &+2\frac{0.59 - 0.44}{h_r}(\frac{5\sqrt{3}}{4}4\epsilon_0h_r)\\
+        &+\frac{0.6579 - 0.5454}{h_r}(\frac{5\sqrt{3}}{4}4\epsilon_0h_r)\\
+        &+\frac{0.53 - 0.42}{h_r}(\frac{5\sqrt{3}}{4}4\epsilon_0h_r)\\
+        &+2\frac{0.5948 - 0.4955}{h_r}(\frac{5\sqrt{3}}{4}4\epsilon_0h_r)\\
+        &+\frac{0.58 - 0.42}{h_r}(\frac{5\sqrt{3}}{4}4\epsilon_0h_r)
+        """).scale(0.6).shift(2*RIGHT)
+
+        self.play(Unwrite(gauss), run_time=0.7)
+        self.play(ReplacementTransform(gauss2, cap_calc))
+
+        self.wait(2)
+
+        charge_result = MathTex(r"q \approx 93.82 pC").shift(2*RIGHT+2*UP)
+        cap_huh = MathTex(r"\Rightarrow C \approx \frac{93.82 pC}{2 V}").shift(2*RIGHT)
+        cap_result = MathTex(r"\Leftrightarrow C \approx 46.91 pF").shift(2*RIGHT+-2*UP)
+        
+        self.play(ReplacementTransform(cap_calc, charge_result))
+        self.wait(1)
+        
+        self.play(Indicate(charge_result), Indicate(capacitance))
+        self.wait(1)
+        
+        self.play(Write(cap_huh))
+        self.wait(1)
+
+        self.play(TransformFromCopy(cap_huh, cap_result))
+
+        self.wait(2)
+
         return
 
 # ! Method of Moments
