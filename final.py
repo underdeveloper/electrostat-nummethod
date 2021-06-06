@@ -885,8 +885,6 @@ class FDM_part_6(Scene):
 
         self.wait(2)
 
-# !! TODO: PART 7 of FDM (capacitance)
-
 class FDM_part_7(Scene):
     def construct(self):
         CIRCLE_RADIUS = 3
@@ -1103,13 +1101,61 @@ class MOM_part_2(Scene):
         # MOMemplate.add_to_preamble(r"\usepackage{gensymb}")
         # MOMemplate.add_to_preamble(r"\usepackage{derivative}")
 
-        gauss_3d = MathTex(r"\oint _s \epsilon \mathbf{E} \cdot \mathbf{dA} = \int \rho_s ds", tex_template=MOMemplate)
+        gauss_3d = MathTex(r"\oint _s \epsilon \mathbf{E} \cdot \mathbf{dA} = \int \rho_s ds", tex_template=MOMemplate).shift(3*UP)
 
         self.play(Write(gauss_3d))
         self.wait(2)
 
-        gauss_2d = MathTex(r"\oint _c \epsilon \mathbf{E} \cdot \mathbf{dl} = \int \rho_l dl", tex_template=MOMemplate).shift(1*DOWN)
+        gauss_2d = MathTex(r"\oint _c \epsilon \mathbf{E} \cdot \mathbf{dl} = \int \rho_l dl", tex_template=MOMemplate).shift(1.5*UP)
 
-        self.play(ApplyMethod(gauss_3d.shift, 1*UP), Write(gauss_2d))
+        self.play(Indicate(gauss_3d), Write(gauss_2d))
+        self.wait(1)
+
+        gauss_2d_2 = MathTex(r"\Rightarrow 2 \pi r \epsilon E = \int \rho_l dl", tex_template=MOMemplate).shift(0*DOWN)
+
+        self.play(TransformFromCopy(gauss_2d, gauss_2d_2))
+        self.wait(1)
+
+        gauss_2d_3 = MathTex(r"\Rightarrow 2 \pi r \epsilon E = \rho_l \Delta l", tex_template=MOMemplate).shift(1.5*DOWN)
+        
+        self.play(TransformFromCopy(gauss_2d_2, gauss_2d_3))
+        self.wait(1)
+
+        gauss_2d_4 = MathTex(r"\therefore E = \frac{\rho_l \Delta l}{2 \pi r \epsilon}", tex_template=MOMemplate).shift(3*DOWN)
+        
+        self.play(TransformFromCopy(gauss_2d_3, gauss_2d_4))
+        self.wait(1)
+
+        electric_field = Group(*self.mobjects)
+
+        self.play(ApplyMethod(electric_field.shift, 3*LEFT))
+        self.wait(1)
+
+        potential = MathTex(r"E = - \nabla \Phi", tex_template=MOMemplate).shift(3*UP, 3*RIGHT)
+        
+        self.play(Write(potential))
+        self.wait(1)
+
+        potential2 = MathTex(r"\Rightarrow \Phi = - \int E dl", tex_template=MOMemplate).shift(1.5*UP, 3*RIGHT)
+
+        self.play(TransformFromCopy(potential, potential2))
+        self.wait(1)
+
+        self.play(Circumscribe(potential2), Indicate(gauss_2d_4))
+        self.wait(1)
+
+        potential3 = MathTex(r"\Rightarrow \Phi = - \int \frac{\rho_l \Delta l}{2 \pi r \epsilon} dr", tex_template=MOMemplate).shift(0*UP, 3*RIGHT)
+        
+        self.play(TransformFromCopy(potential2, potential3))
+        self.wait(1)
+
+        potential4 = MathTex(r"\Leftrightarrow \Phi = - \frac{\rho_l \Delta l}{2 \pi \epsilon} ln \lvert r \rvert", tex_template=MOMemplate).shift(-1.5*UP, 3*RIGHT)
+        self.play(TransformFromCopy(potential3, potential4))
+        self.wait(1)
+
+        potential5 = MathTex(r"\therefore \Phi = \sum - \frac{\rho_l \Delta l}{2 \pi \epsilon} ln \lvert r - r' \rvert", tex_template=MOMemplate).shift(-3*UP, 3*RIGHT)
+        self.play(TransformFromCopy(potential4, potential5))
+        self.wait(1)
+        
 
         self.wait(2)
