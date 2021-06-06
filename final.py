@@ -1190,13 +1190,183 @@ class MOM_part_3(Scene):
         potential_notes = MathTex(r"h_\theta r_0 = 0.1 \frac{\pi}{3}", color=RED).shift(0*UP+2.5*RIGHT)
         self.play(Write(potential_notes))
 
-        potential3 = MathTex(r"\Rightarrow \Phi = \frac{\rho_l \Delta l}{2 \pi \epsilon} \left( r ln \lvert r \rvert - r\right) \vert _{-0.1 \frac{\pi}{6}} ^{+0.1 \frac{\pi}{6}}").shift(-1.2*UP+2.5*RIGHT)
+        potential3 = MathTex(r"\Rightarrow \Phi = - \frac{\rho_l \Delta l}{2 \pi \epsilon} \left( r ln \lvert r \rvert - r\right) \vert _{-0.1 \frac{\pi}{6}} ^{+0.1 \frac{\pi}{6}}").shift(-1.2*UP+2.5*RIGHT)
         self.play(Write(potential3))
 
-        potential4 = MathTex(r"\therefore \Phi \approx \frac{\rho_l \Delta l}{2 \pi \epsilon} \left( -0.3995 \right)").shift(-2.4*UP+2.5*RIGHT)
+        potential4 = MathTex(r"\therefore \Phi \approx \frac{\rho_l \Delta l}{2 \pi \epsilon} \left( 0.3995 \right)").shift(-2.4*UP+2.5*RIGHT)
         self.play(TransformFromCopy(potential3, potential4))
 
         text_this = Text("(ini adalah potensial pada titik singuler)", size=0.4).next_to(potential4, direction=DOWN)
         self.play(Write(text_this))
 
         self.wait(2)
+
+class MOM_part_4(Scene):
+    def construct(self):
+        CIRCLE_RADIUS = 3
+
+        # Adding the circle...
+
+        circle = []
+
+        RedArc = Arc(color=RED, start_angle=0, angle=-2*TAU /
+                     3, stroke_width=4*DEFAULT_STROKE_WIDTH, radius=CIRCLE_RADIUS)
+        WhiteArc = Arc(color=WHITE, start_angle=-2*TAU/3, angle=-
+                       TAU/3, stroke_width=4*DEFAULT_STROKE_WIDTH, radius=CIRCLE_RADIUS)
+                       
+        RedSector = Sector(color='#021a00', start_angle=0,
+                           angle=-2*TAU/3, outer_radius=CIRCLE_RADIUS)
+        WhiteSector = Sector(color='#0f0e12', start_angle=0,
+                             angle=TAU/3, outer_radius=CIRCLE_RADIUS)
+
+        circle += [RedSector,WhiteSector]
+
+        # Adding the radial and angular lines
+
+        d_theta = TAU/6
+        d_radial = CIRCLE_RADIUS / 5
+
+        min_theta = 0 * d_theta  # multiple of d_theta
+        max_theta = 6 * d_theta  # multiple of d_theta
+        min_radial = 0 * d_radial # multiple of d_radial
+        max_radial = 5 * d_radial # multiple of d_radial
+
+        theta = min_theta
+        while theta <= max_theta:
+            circle.append(ParametricFunction(lambda t: np.array((
+                t*np.cos(theta), t*np.sin(theta), 0)), color=GREY, t_range=np.array((min_radial, max_radial))))
+            theta += d_theta
+
+        r = min_radial
+        while r <= max_radial:
+            circle.append(ParametricFunction(lambda t: np.array((
+               r*np.cos(t), r*np.sin(t), 0)), color=GREY, t_range=np.array((min_theta, max_theta))))
+            r += d_radial
+
+        # these have to be in front of course
+        circle += [RedArc, WhiteArc]
+
+        circleGroup = VGroup(*circle)
+
+        self.play(Create(circleGroup), run_time= 4)
+
+        # Segments!
+
+        segment_colours = ["#222222", "#555555", "#AAAAAA", "#AAFFAA", "#55FF55", "#22FF22"]
+        segments: list[ParametricFunction] = []
+        rhos: list[Tex] = []
+        charges: list[Dot] = []
+
+        theta = min_theta+d_theta
+        i = 0
+        while theta < max_theta:
+            segments.append(ParametricFunction(lambda t: np.array((
+                (max_radial)*np.cos(t), (max_radial)*np.sin(t), 0)), color=segment_colours[i], t_range=np.array((theta, theta+d_theta)), stroke_width=1.5*DEFAULT_STROKE_WIDTH))
+            charges.append(Dot((max_radial)*np.cos(theta+d_theta/2)*RIGHT + (max_radial)*np.sin(theta+d_theta/2)*UP, color=BLUE_C))
+            rhos.append(MathTex(r"Q_" + str(i+1), size=0.4, color=BLUE_C).move_to((max_radial+0.5)*np.cos(theta+d_theta/2)*RIGHT + (max_radial+0.5)*np.sin(theta+d_theta/2)*UP))
+            
+            theta += d_theta
+            i += 1
+        
+        segmentsGroup = VGroup(*segments)
+        rhosGroup = VGroup(*rhos)
+        chargesGroup = VGroup(*charges)
+
+        self.play(Create(segmentsGroup), run_time=1.5)
+        self.play(Write(rhosGroup), Create(chargesGroup))
+
+        self.wait(2)
+
+        # Dots and labels, oh my!
+
+        dots_oh_my: list[Dot()] = []
+        lables_oh_my: list[Text()] = []
+        dot_count = 0
+
+        theta = min_theta + d_theta
+        r = min_radial + d_radial
+        while (theta < max_theta+d_radial): 
+            while (r < max_radial):
+                dots_oh_my.append(Dot(point=(r*np.sin(theta))*UP+(r*np.cos(theta))*RIGHT, radius=1.5*DOT_LABEL_SIZE))
+                lables_oh_my.append(Text(text=str(dot_count+1), size=0.3, color=BLACK).next_to(dots_oh_my[dot_count], direction=0))
+                # self.play(Create(dots_oh_my[dot_count]), Write(lables_oh_my[dot_count]), run_time=0.05)
+                r += d_radial
+                dot_count += 1
+            r = min_theta + d_radial
+            theta += d_theta
+        
+        dots_oh_my.append(Dot(radius=1.5*DOT_LABEL_SIZE))
+        lables_oh_my.append(Text(text=str(0), size=0.3, color=BLACK).next_to(dots_oh_my[dot_count], direction=0))
+        # self.play(Create(dots_oh_my[dot_count]), Write(lables_oh_my[dot_count]), runtime=0.05)
+
+        dotlabGroup = VGroup(*dots_oh_my, *lables_oh_my)
+
+        # self.play(Create(dotlabGroup))
+
+        for charge in charges:
+            for charge_prime in charges:
+                if charge != charge_prime:
+                    self.play(ShowPassingFlash(Line(charge.get_center(), charge_prime.get_center()), time_width=2), run_time=0.75)
+            self.wait(0.5)
+
+        AllGroup = VGroup(circleGroup, segmentsGroup, chargesGroup, rhosGroup)
+
+        self.wait(2)
+
+        self.play(ApplyMethod(AllGroup.shift, 15*LEFT))
+
+        charges_matrix = MathTex(r"""
+            \begin{bmatrix}
+        -1.598 & 0.4log(0.1) & 0.1log(0.1\sqrt{3}) & 0.1log(0.2) & 0.1log(0.1\sqrt{3}) & 0.1log(0.1) \\
+        0.4log(0.1) & -1.598 & 0.1log(0.1) & 0.1log(0.1\sqrt{3}) & 0.1log(0.2) & 0.1log(0.1\sqrt{3}) \\
+        0.4log(0.1\sqrt{3}) & 0.4log(0.1) & -0.3995 & 0.1log(0.1) & 0.1log(0.1\sqrt{3}) & 0.1log(0.2) \\
+        0.4log(0.2) & 0.4log(0.1\sqrt{3}) & 0.1log(0.1) & -0.3995 & 0.1log(0.1) & 0.1log(0.1\sqrt{3}) \\
+        0.4log(0.1\sqrt{3}) & 0.4log(0.2) & 0.1log(0.1\sqrt{3}) & 0.1log(0.1) & -0.3995 & 0.1log(0.1) \\
+        0.4log(0.1) & 0.4log(0.1\sqrt{3}) & 0.1log(0.2) & 0.1log(0.1\sqrt{3}) & 0.1log(0.1) & -0.3995 \\
+            \end{bmatrix}
+            \begin{bmatrix}
+        \rho_l{}_1 \\
+        \rho_l{}_2 \\
+        \rho_l{}_3 \\
+        \rho_l{}_4 \\
+        \rho_l{}_5 \\
+        \rho_l{}_6 \\
+            \end{bmatrix}
+        =
+            \begin{bmatrix}
+        2\pi\epsilon_0 \\
+        2\pi\epsilon_0 \\
+        -8\pi\epsilon_0 \\
+        -8\pi\epsilon_0 \\
+        -8\pi\epsilon_0 \\
+        -8\pi\epsilon_0 \\
+            \end{bmatrix}        
+        """).scale(0.5)
+
+        charges_matrix2 = MathTex(r"""
+        \begin{bmatrix}
+            \rho_l{}_1 \\
+            \rho_l{}_2 \\
+            \rho_l{}_3 \\
+            \rho_l{}_4 \\
+            \rho_l{}_5 \\
+            \rho_l{}_6 \\
+        \end{bmatrix}
+        =
+        \begin{bmatrix}
+            -0.1694\mathrm{x}10^{-9} \\
+            -0.1694\mathrm{x}10^{-9} \\
+            0.6924\mathrm{x}10^{-9} \\
+            0.2688\mathrm{x}10^{-9} \\
+            0.2688\mathrm{x}10^{-9} \\
+            0.6924\mathrm{x}10^{-9} \\
+        \end{bmatrix}     
+        """)
+
+        self.play(Write(charges_matrix))
+        self.wait(1)
+
+        self.play(ReplacementTransform(charges_matrix, charges_matrix2))
+
+        self.wait(2)
+
