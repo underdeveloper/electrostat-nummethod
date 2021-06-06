@@ -385,8 +385,6 @@ class FDM_part_3(Scene):
 
         self.wait(2)
 
-# !! TODO part 4: boundary conditions
-
 class FDM_part_4(Scene):
     def construct(self):
         Xemplate = TexTemplate()
@@ -442,7 +440,7 @@ class FDM_part_4(Scene):
 
         self.play(Create(RedSector), Create(WhiteSector), Create(sector), Create(contour))
 
-        self.wait(2)
+        # self.wait(2)
 
         Phi0 = Dot(color=WHITE).next_to(sector, direction=0).shift(0.63*DOWN+0.03*LEFT)
         Phi0Eq = Tex(r"$\Phi_0$", color=WHITE).scale(0.75).next_to(Phi0).shift(0.2*LEFT+0.2*DOWN)
@@ -472,18 +470,61 @@ class FDM_part_4(Scene):
         self.play(Create(Phi0), Create(Phi1), Create(Phi2), Create(Phi3), Create(Phi4))
         self.play(Write(Phi0Eq), Write(Phi1Eq), Write(Phi2Eq), Write(Phi3Eq), Write(Phi4Eq))
 
-        self.wait(2)
+        Epsilon_A = MathTex(r'\epsilon _A', color='#d2bdff').next_to(Phi0, direction=0).scale(0.7).shift(2.5*UP+0.4*LEFT)
+        Epsilon_B = MathTex(r'\epsilon _B', color='#00ff00').next_to(Phi0, direction=0).scale(0.7).shift(-1.7*UP-1.8*LEFT)
+        self.play(Write(Epsilon_A), Write(Epsilon_B))
+
+        self.wait(1)
 
         seccontour = Group(*self.mobjects)
 
         self.play(ApplyMethod(seccontour.scale, 0.75))
         self.play(ApplyMethod(seccontour.shift, 3*LEFT))
 
-        gauss = MathTex(r"\oint_c \epsilon \mathbf{E} \cdot \mathbf{dl} = q = 0\\\mathbf{E}=-\nabla\Phi",tex_template=Xemplate).shift(2*RIGHT)
+        gauss = MathTex(r"\oint_c \epsilon \mathbf{E} \cdot \mathbf{dl} = q = 0\\\mathbf{E} = -\mathbf{\nabla}\Phi",tex_template=Xemplate).shift(2*RIGHT+2*UP)
+
+        gauss2 = MathTex(r"""\therefore 0 &= \oint_c \epsilon \left( -\mathbf{\nabla}\Phi \right) \cdot \mathbf{dl} \\
+            &= \oint_c \epsilon \mathbf{\nabla}\Phi \cdot \mathbf{dl} \\
+            &= \oint_c \epsilon \pdv{\Phi}{n} dl
+            """, tex_template=Xemplate).shift(2*RIGHT+1*DOWN)
 
         self.play(Write(gauss))
 
+        self.play(Write(gauss2))
+
         self.wait(2)
+
+        gauss3 = MathTex(r"0 = \oint_c \epsilon \pdv{\Phi}{n} dl", tex_template=Xemplate).shift(2*RIGHT+2*UP)
+
+        self.play(Unwrite(gauss), run_time=0.7)
+        self.play(ReplacementTransform(gauss2, gauss3))
+        
+        gauss_discrete = MathTex(r"0 = \sum \epsilon \pdv{\Phi}{n} \Delta l", tex_template=Xemplate).shift(2*RIGHT)
+        gauss_discrete2 = MathTex(r"""0 &= \sum \epsilon \pdv{\Phi}{n} \Delta l \\
+            &= \sum \epsilon \frac{\Phi \left( n_0 + h_n \right) - \Phi \left( n_0 \right)}{h_n} \Delta l
+            """, tex_template=Xemplate).scale(0.75).shift(2.5*RIGHT)
+
+        self.play(TransformFromCopy(gauss3, gauss_discrete))
+        self.wait(1) 
+
+        self.play(ReplacementTransform(gauss_discrete, gauss_discrete2))
+        self.wait(1)
+
+        gauss_discrete_final = MathTex(r"""0 &= \epsilon \frac{\Phi_1 - \Phi_0}{h_r} \left( \epsilon_A h_r\right) \\
+            &+ \epsilon \frac{\Phi_2 - \Phi_0}{h_r} \left( \epsilon_B h_r\right) \\
+            &+ \epsilon \frac{\Phi_3 - \Phi_0}{r_0 h_\theta} \left( \frac{\epsilon_A + \epsilon_B}{2} \left(r_0 + \frac{h_r}{2} \right) h_\theta \right) \\
+            &+ \epsilon \frac{\Phi_4 - \Phi_0}{r_0 h_\theta} \left( \frac{\epsilon_B + \epsilon_A}{2} \left(r_0 + \frac{h_r}{2} \right) h_\theta \right) \\         
+            """, tex_template=Xemplate).scale(0.75).shift(2.5*RIGHT)
+
+        self.play(FadeOut(gauss3), ReplacementTransform(gauss_discrete2, gauss_discrete_final))
+        self.wait(1)
+
+        gauss_text = Text("Ini adalah rumus pencarian potensial \npada daerah perbatasan permitivitas heterogen.", size=0.4).next_to(gauss_discrete_final, direction=DOWN)
+        
+        self.play(Write(gauss_text))
+
+        self.wait(2)
+
         
         return
 
@@ -836,3 +877,5 @@ class FDM_part_6(Scene):
         self.play(Create(circleGroup.shift(2*RIGHT)), run_time=2)
 
         self.wait(2)
+
+# !! TODO: PART 7 of FDM (capacitance)
