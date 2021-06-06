@@ -68,7 +68,7 @@ class MainProblem(Scene):
         #     *[FadeOut(mob)for mob in self.mobjects]
         #     # All mobjects in the screen are saved in self.mobjects
         # )
-        # self.wait(1)
+        # self.wait(2)
 
 class FDM_part_1(Scene):
     def construct(self):
@@ -114,7 +114,7 @@ class FDM_part_1(Scene):
 
         self.play(Write(deltaAngle))
 
-        self.wait(1)
+        self.wait(2)
 
         r = min_r
         while r <= max_r:
@@ -126,7 +126,7 @@ class FDM_part_1(Scene):
 
         self.play(Write(deltaRadius))
 
-        self.wait(1)
+        self.wait(2)
 
         self.play(FadeOut(deltaAngle), FadeOut(deltaRadius))
 
@@ -155,7 +155,7 @@ class FDM_part_1(Scene):
         # print(circle_fdm)
         # self.play(FadeOut(circle_fdm)) # testing out group animations
 
-        # self.wait(1)
+        # self.wait(2)
         
         # # ! fadeout
 
@@ -163,7 +163,7 @@ class FDM_part_1(Scene):
         #     *[FadeOut(mob)for mob in self.mobjects]
         #     # All mobjects in the screen are saved in self.mobjects
         # )
-        # self.wait(1)
+        # self.wait(2)
 
 class FDM_part_2(Scene):
     def construct(self):
@@ -178,14 +178,14 @@ class FDM_part_2(Scene):
 
         self.play(Write(deriv1st), runtime=2)
         self.play(Write(deriv2nd), runtime=3)
-        self.wait(1)
+        self.wait(2)
 
         derivs = Group(deriv1st, deriv2nd)      
         laplacian_phi = Tex('$\\nabla^2 \\Phi = \\pdv[2]{\\Phi}{r} + \\frac{1}{r} \\pdv{\\Phi}{r} + \\frac{1}{r^2} \\pdv[2]{\\Phi}{\\theta} = 0$', tex_template=Xemplate)
 
         self.play(ApplyMethod(derivs.shift, 3*UP))
         self.play(Write(laplacian_phi))
-        self.wait(1)
+        self.wait(2)
 
         self.play(ApplyMethod(laplacian_phi.shift, 3.35*DOWN))
         
@@ -198,7 +198,7 @@ class FDM_part_2(Scene):
         self.play(TransformFromCopy(deriv1st, dPdr))
         self.play(TransformFromCopy(deriv2nd, d2Pdt2))
 
-        self.wait(1)
+        self.wait(2)
         
         laplacian_phi1 = MathTex(r"""
         \nabla^2 \Phi = 0 &= \pdv[2]{\Phi}{r} \\ 
@@ -207,7 +207,7 @@ class FDM_part_2(Scene):
         """, tex_template=Xemplate).shift(1.8*DOWN)
 
         self.play(FadeOut(derivs), ApplyMethod(derivs2.shift, 2.15*UP), ReplacementTransform(laplacian_phi, laplacian_phi1))
-        self.wait(1)
+        self.wait(2)
 
         # Making this is such a mess. surely there is a better way.
         d2Pdr2_rect = Rectangle(color=YELLOW, height=1.22, width=1).next_to(laplacian_phi1, direction=0).shift(1.25*UP+1.05*RIGHT)
@@ -244,7 +244,7 @@ class FDM_part_2(Scene):
 
         self.play(ReplacementTransform(laplacian_phi3, laplacian_phi4))
 
-        self.wait(1)
+        self.wait(2)
 
         self.play(ApplyMethod(laplacian_phi4.move_to, ORIGIN), FadeOut(derivs2))
 
@@ -321,7 +321,7 @@ class FDM_part_3(Scene):
         self.play(Create(Phi0), Create(Phi1), Create(Phi2), Create(Phi3), Create(Phi4))
         self.play(Write(Phi0Eq), Write(Phi1Eq), Write(Phi2Eq), Write(Phi3Eq), Write(Phi4Eq))
 
-        self.wait(1)
+        self.wait(2)
 
         laplacian_numbered = MathTex(r"""
         \nabla^2 \Phi = 0 &= \frac{\Phi_1+\Phi_2-2\Phi_0}{h_r^2} \\ 
@@ -335,7 +335,7 @@ class FDM_part_3(Scene):
         
         self.play(Write(approximation), run_time= 4)
 
-        self.wait(1)
+        self.wait(2)
 
         laplacian_reordered = MathTex(r"""
         \nabla^2 \Phi = 0 &= \frac{\Phi_1+\Phi_2-2\Phi_0}{h^2} \\ 
@@ -345,7 +345,7 @@ class FDM_part_3(Scene):
 
         self.play(ReplacementTransform(laplacian_numbered, laplacian_reordered))
 
-        self.wait(1)
+        self.wait(2)
 
         laplacian_reordered2 = MathTex(r"""
         0 &= \Phi_1+\Phi_2-2\Phi_0 \\ 
@@ -355,7 +355,7 @@ class FDM_part_3(Scene):
 
         self.play(ReplacementTransform(laplacian_reordered, laplacian_reordered2))
         
-        self.wait(1)
+        self.wait(2)
 
         laplacian_reordered3 = MathTex(r"""
         0 &= \Phi_1+\Phi_2-2\Phi_0 \\ 
@@ -365,7 +365,7 @@ class FDM_part_3(Scene):
 
         self.play(Indicate(approximation), ReplacementTransform(laplacian_reordered2, laplacian_reordered3))
 
-        self.wait(1)
+        self.wait(2)
 
         laplacian_reordered4 = MathTex(r"""
         0 &= \Phi_1+\Phi_2-2\Phi_0 \\ 
@@ -374,7 +374,7 @@ class FDM_part_3(Scene):
 
         self.play(ReplacementTransform(laplacian_reordered3, laplacian_reordered4))
 
-        self.wait(1)
+        self.wait(2)
 
         laplacian_final = MathTex(r"""
         0 = \Phi_1+\Phi_2-2\Phi_0
@@ -387,4 +387,107 @@ class FDM_part_3(Scene):
         
         self.play(Write(laplacian_text))
 
+        self.wait(2)
+
+# !! TODO part 4: boundary conditions
+
+class FDM_part_4(Scene):
+    def construct(self):
+        return
+
+class FDM_part_5(Scene):
+    def construct(self):
+
+        CIRCLE_RADIUS = 3
+
+        # Adding the circle
+
+        RedArc = Arc(color=RED, start_angle=0, angle=-2*TAU /
+                     3, stroke_width=2*DEFAULT_STROKE_WIDTH, radius=CIRCLE_RADIUS)
+        WhiteArc = Arc(color=WHITE, start_angle=-2*TAU/3, angle=-
+                       TAU/3, stroke_width=2*DEFAULT_STROKE_WIDTH, radius=CIRCLE_RADIUS)
+                       
+        # RedVolt = Tex('$+1V$', color=RED).shift(1.7*LEFT+1.7*DOWN).scale(0.7)
+        # WhiteVolt = Tex('$-1V$', color=WHITE).shift(1.7*RIGHT+1.7*UP).scale(0.7)
+        
+        RedSector = Sector(color='#021a00', start_angle=0,
+                           angle=-2*TAU/3, outer_radius=CIRCLE_RADIUS)
+        WhiteSector = Sector(color='#0f0e12', start_angle=0,
+                             angle=TAU/3, outer_radius=CIRCLE_RADIUS)
+
+        # RedPermissivity = Tex('$4 \\epsilon _0$', color='#00ff00').shift(0.2*LEFT+1.5*DOWN).scale(0.7)
+        # WhitePermissivity = Tex('$\\epsilon _0$', color='#d2bdff').shift(0.2*RIGHT+1.5*UP).scale(0.7)
+
+        self.add(RedSector, WhiteSector)
+        # self.add(RedVolt, WhiteVolt, RedPermissivity, WhitePermissivity) # probably dont need these lol
+        
+        # Adding the radial and angular lines
+
+        d_theta = TAU/6
+        d_radial = CIRCLE_RADIUS / 5
+
+        min_theta = 0 * d_theta  # multiple of d_theta
+        max_theta = 6 * d_theta  # multiple of d_theta
+        min_radial = 0 * d_radial # multiple of d_radial
+        max_radial = 5 * d_radial # multiple of d_radial
+
+        theta = min_theta
+        while theta <= max_theta:
+            self.add(ParametricFunction(lambda t: np.array((
+                t*np.cos(theta), t*np.sin(theta), 0)), color=GREY, t_min=min_radial, t_max=max_radial))
+            theta += d_theta
+
+        r = min_radial
+        while r <= max_radial:
+            self.add(ParametricFunction(lambda t: np.array((
+               r*np.cos(t), r*np.sin(t), 0)), color=GREY, t_min=min_theta, t_max=max_theta))
+            r += d_radial
+
+        # these have to be in front of course
+        self.add(RedArc, WhiteArc)
+
+        circle = VGroup(*self.mobjects)
+
+        # The dots!
+
+        dots_oh_my: list[Dot()] = []
+        lables_oh_my: list[Text()] = []
+        dot_count = 0
+
+        theta = min_theta + d_theta
+        r = min_radial + d_radial
+        while (theta < max_theta+d_radial): 
+            while (r < max_radial):
+                dots_oh_my.append(Dot(point=(r*np.sin(theta))*UP+(r*np.cos(theta))*RIGHT, radius=1.5*DOT_LABEL_SIZE))
+                lables_oh_my.append(Text(text=str(dot_count+1), size=0.3, color=BLACK).next_to(dots_oh_my[dot_count], direction=0))
+                self.play(Create(dots_oh_my[dot_count]), Write(lables_oh_my[dot_count]), run_time=0.05)
+                r += d_radial
+                dot_count += 1
+            r = min_theta + d_radial
+            theta += d_theta
+        
+        dots_oh_my.append(Dot(radius=1.5*DOT_LABEL_SIZE))
+        lables_oh_my.append(Text(text=str(0), size=0.3, color=BLACK).next_to(dots_oh_my[dot_count], direction=0))
+        self.play(Create(dots_oh_my[dot_count]), Write(lables_oh_my[dot_count]), runtime=0.05)
+
+        self.wait(2)
+
+        symmetry_line = Line(1.2*CIRCLE_RADIUS*np.sin(d_theta)*UP+1.2*CIRCLE_RADIUS*np.cos(d_theta)*RIGHT,1.2*CIRCLE_RADIUS*np.sin(d_theta)*DOWN+1.2*CIRCLE_RADIUS*np.cos(d_theta)*LEFT, color=BLUE_B, stroke_width=2.25*DEFAULT_STROKE_WIDTH)
+        
+        self.play(ShowCreationThenDestruction(symmetry_line, run_time=3))
+
+        self.wait(2)
+
+        self.play(Indicate(mobject=Group(*dots_oh_my[4:12])), Indicate(mobject=Group(*lables_oh_my[4:12]), color=BLACK), Indicate(mobject=Group(*dots_oh_my[16:24])), Indicate(mobject=Group(*lables_oh_my[16:24]), color=BLACK))
+
+        self.wait(2)
+
+        self.play(FadeOut(vmobject=VGroup(*dots_oh_my[16:24], *lables_oh_my[16:24])))
+
+        self.wait(2)
+
+        totalGroup = Group(*self.mobjects)
+
+        self.play(FadeOutAndShift(totalGroup, LEFT))
+        
         self.wait(2)
