@@ -389,6 +389,12 @@ class FDM_part_3(Scene):
 
 class FDM_part_4(Scene):
     def construct(self):
+        Xemplate = TexTemplate()
+        Xemplate.add_to_preamble(r"\usepackage{gensymb}")
+        Xemplate.add_to_preamble(r"\usepackage{derivative}")
+        Xemplate.add_to_preamble(r"\usepackage{cancel}")
+        Xemplate.add_to_preamble(r"\usepackage{siunitx}")
+
         d_theta = TAU/12
         d_radial = 2
 
@@ -396,6 +402,11 @@ class FDM_part_4(Scene):
         max_theta = 2 * d_theta  # multiple of d_theta
         min_radial = 1 * d_radial # multiple of d_radial
         max_radial = 3 * d_radial # multiple of d_radial
+
+        RedSector = Sector(color='#021a00', start_angle=min_theta,
+                           angle=d_theta, inner_radius=min_radial, outer_radius=max_radial).shift(-2.5*UP+-2*d_radial*RIGHT)
+        WhiteSector = Sector(color='#0f0e12', start_angle=min_theta + d_theta,
+                           angle=d_theta, inner_radius=min_radial, outer_radius=max_radial).shift(-2.5*UP+-2*d_radial*RIGHT)
 
         sector_lines = []
 
@@ -413,8 +424,6 @@ class FDM_part_4(Scene):
 
         sector = VGroup(*sector_lines)
 
-        self.play(Create(sector))
-
         contour_lines = []
 
         theta = min_theta + 0.5 * d_theta
@@ -431,10 +440,51 @@ class FDM_part_4(Scene):
 
         contour = VGroup(*contour_lines)
 
-        self.play(Create(contour))
+        self.play(Create(RedSector), Create(WhiteSector), Create(sector), Create(contour))
 
         self.wait(2)
 
+        Phi0 = Dot(color=WHITE).next_to(sector, direction=0).shift(0.63*DOWN+0.03*LEFT)
+        Phi0Eq = Tex(r"$\Phi_0$", color=WHITE).scale(0.75).next_to(Phi0).shift(0.2*LEFT+0.2*DOWN)
+        Phi1 = Dot(color=GREEN).next_to(Phi0, direction=0).shift(
+            # shift to "origin" of polar plot
+            d_radial*np.sin(d_theta)*-2*UP+d_radial*np.cos(d_theta)*-2*RIGHT  
+            # shift to correct position on the polar plot
+            + d_radial*np.sin(2*d_theta)*2*UP+d_radial*np.cos(2*d_theta)*2*RIGHT  
+            )
+        Phi1Eq = Tex(r"$\Phi_1$", color=GREEN).scale(0.75).next_to(Phi1, direction=LEFT).shift(0.2*RIGHT+0.2*UP)
+        Phi2 = Dot(color=YELLOW).next_to(Phi0, direction=0).shift(
+            # shift to "origin" of polar plot
+            d_radial*np.sin(d_theta)*-2*UP+d_radial*np.cos(d_theta)*-2*RIGHT  
+            # shift to correct position on the polar plot
+            + d_radial*np.sin(0*d_theta)*2*UP+d_radial*np.cos(0*d_theta)*2*RIGHT  
+            )
+        Phi2Eq = Tex(r"$\Phi_2$", color=YELLOW).scale(0.75).next_to(Phi2).shift(0.2*LEFT+0.3*DOWN)
+        Phi3 = Dot(color=RED).next_to(Phi0, direction=0).shift(
+            d_radial*np.sin(d_theta)*UP+d_radial*np.cos(d_theta)*RIGHT
+            )
+        Phi3Eq = Tex(r"$\Phi_3$", color=RED).scale(0.75).next_to(Phi3).shift(0.2*LEFT+0.1*DOWN)
+        Phi4 = Dot(color=PURPLE).next_to(Phi0, direction=0).shift(
+            d_radial*np.sin(d_theta)*-1*UP+d_radial*np.cos(d_theta)*-1*RIGHT
+            )
+        Phi4Eq = Tex(r"$\Phi_4$", color=PURPLE).scale(0.75).next_to(Phi4).shift(0.2*LEFT+0.1*DOWN)
+        Phi0Eq.shift(0.1*UP)
+        self.play(Create(Phi0), Create(Phi1), Create(Phi2), Create(Phi3), Create(Phi4))
+        self.play(Write(Phi0Eq), Write(Phi1Eq), Write(Phi2Eq), Write(Phi3Eq), Write(Phi4Eq))
+
+        self.wait(2)
+
+        seccontour = Group(*self.mobjects)
+
+        self.play(ApplyMethod(seccontour.scale, 0.75))
+        self.play(ApplyMethod(seccontour.shift, 3*LEFT))
+
+        gauss = MathTex(r"\oint_c \epsilon \mathbf{E} \cdot \mathbf{dl} = q = 0\\\mathbf{E}=-\nabla\Phi",tex_template=Xemplate).shift(2*RIGHT)
+
+        self.play(Write(gauss))
+
+        self.wait(2)
+        
         return
 
 class FDM_part_5(Scene):
