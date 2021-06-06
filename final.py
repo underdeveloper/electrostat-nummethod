@@ -5,8 +5,6 @@ DOT_LABEL_SIZE = 0.12
 class MainProblem(Scene):
     def construct(self):
 
-        # !! CHAPTER 1: INTRODUCTION
-
         memplate = TexTemplate()
         memplate.add_to_preamble(r"\usepackage{gensymb}")
 
@@ -60,57 +58,63 @@ class MainProblem(Scene):
 
         self.play(Write(Text2))
 
+        self.wait(3)
+
+        # ! fadeout
+
+        self.play(
+            *[FadeOut(mob)for mob in self.mobjects]
+            # All mobjects in the screen are saved in self.mobjects
+        )
         self.wait(2)
-
-        # # ! fadeout
-
-        # self.play(
-        #     *[FadeOut(mob)for mob in self.mobjects]
-        #     # All mobjects in the screen are saved in self.mobjects
-        # )
-        # self.wait(2)
 
 # ! Finite Difference Method
 
 class FDM_part_1(Scene):
     def construct(self):
+
+        self.wait(2)
         
-        # !! CHAPTER 2: FDM DIVISION
+        CIRCLE_RADIUS = 3
 
         memplate = TexTemplate()
         memplate.add_to_preamble(r"\usepackage{gensymb}")
 
         RedArc = Arc(color=RED, start_angle=0, angle=-2*TAU /
-                     3, stroke_width=2*DEFAULT_STROKE_WIDTH, radius=2)
+                     3, stroke_width=2*DEFAULT_STROKE_WIDTH, radius=CIRCLE_RADIUS)
         WhiteArc = Arc(color=WHITE, start_angle=-2*TAU/3, angle=-
-                       TAU/3, stroke_width=2*DEFAULT_STROKE_WIDTH, radius=2)
+                       TAU/3, stroke_width=2*DEFAULT_STROKE_WIDTH, radius=CIRCLE_RADIUS)
                        
-        RedVolt = Tex('$+1V$', color=RED).shift(1.7*LEFT+1.7*DOWN).scale(0.7)
-        WhiteVolt = Tex('$-1V$', color=WHITE).shift(1.7*RIGHT+1.7*UP).scale(0.7)
+        RedVolt = Tex('$+1V$', color=RED).shift(2.6*LEFT+2.6*DOWN).scale(0.7)
+        WhiteVolt = Tex('$-1V$', color=WHITE).shift(2.6*RIGHT+2.6*UP).scale(0.7)
         
         RedSector = Sector(color='#021a00', start_angle=0,
-                           angle=-2*TAU/3, outer_radius=2.0)
+                           angle=-2*TAU/3, outer_radius=CIRCLE_RADIUS)
         WhiteSector = Sector(color='#0f0e12', start_angle=0,
-                             angle=TAU/3, outer_radius=2.0)
+                             angle=TAU/3, outer_radius=CIRCLE_RADIUS)
         
         self.add(RedVolt, WhiteVolt, RedSector, WhiteSector)
         # BUGGY ALSO WILL BECOME DEPRECATED IN 1.0
         self.foreground_mobjects += RedArc
         self.foreground_mobjects += WhiteArc 
 
-        min_theta = 0  # multiple of TAU/20
-        max_theta = TAU  # multiple of TAU/20
+
+        min_theta = 0
+        max_theta = TAU
         min_r = 0
-        max_r = 2
+        max_r = CIRCLE_RADIUS
+
+        d_theta = TAU/6
+        d_r = max_r/5
 
         theta = min_theta
         while theta <= max_theta:
             self.play(Create(ParametricFunction(lambda t: np.array((
-                t*np.cos(theta), t*np.sin(theta), 0)), color=GREY, t_min=min_r, t_max=max_r)), run_time=0.2)
-            theta += TAU/6
+                t*np.cos(theta), t*np.sin(theta), 0)), color=GREY, t_range=np.array((min_r, max_r)))), run_time=0.2)
+            theta += d_theta
 
-        deltaAngle = Tex('$\\Delta \\Phi = \\frac{\\pi}{3}$').shift(2.5*UP)
-        deltaRadius = Tex('$\\Delta r = 2 cm$', tex_template=memplate).shift(2.5*DOWN)
+        deltaAngle = Tex('$\\Delta \\Phi = \\frac{\\pi}{3}$').shift(3.3*UP)
+        deltaRadius = Tex('$\\Delta r = 2 cm$', tex_template=memplate).shift(3.3*DOWN)
 
         self.play(Write(deltaAngle))
 
@@ -120,7 +124,7 @@ class FDM_part_1(Scene):
         while r <= max_r:
             self.play(Create(ParametricFunction(lambda t: np.array((
                r*np.cos(t), r*np.sin(t), 0)), color=GREY, t_range=np.array((min_theta, max_theta)))), run_time=0.2)
-            r += 0.4
+            r += d_r
 
         self.play(Write(deltaRadius))
 
@@ -132,20 +136,20 @@ class FDM_part_1(Scene):
         dot_count = 0
 
         theta = min_theta
-        r = min_r + 0.4
+        r = min_r + d_r
         while (r < max_r):
             while (theta < max_theta):
                 dots_oh_my.append(Dot(point=(r*np.sin(theta))*UP+(r*np.cos(theta))*RIGHT, radius=DOT_LABEL_SIZE))
                 self.play(Create(dots_oh_my[dot_count]), run_time=0.1)
-                theta += TAU/6
+                theta += d_theta
                 dot_count += 1
-            r += 0.4
+            r += d_r
             theta = min_theta
         
         dots_oh_my.append(Dot(radius=DOT_LABEL_SIZE))
         self.play(Create(dots_oh_my[dot_count]), runtime=0.1)
         
-        self.wait(2)
+        self.wait(3)
 
         # I hate this so much.
 
@@ -155,13 +159,13 @@ class FDM_part_1(Scene):
 
         # self.wait(2)
         
-        # # ! fadeout
+        # ! fadeout
 
-        # self.play(
-        #     *[FadeOut(mob)for mob in self.mobjects]
-        #     # All mobjects in the screen are saved in self.mobjects
-        # )
-        # self.wait(2)
+        self.play(
+            *[FadeOut(mob)for mob in self.mobjects]
+            # All mobjects in the screen are saved in self.mobjects
+        )
+        self.wait(2)
 
 class FDM_part_2(Scene):
     def construct(self):
@@ -210,7 +214,7 @@ class FDM_part_2(Scene):
         # Making this is such a mess. surely there is a better way.
         d2Pdr2_rect = Rectangle(color=YELLOW, height=1.22, width=1).next_to(laplacian_phi1, direction=0).shift(1.25*UP+1.05*RIGHT)
         
-        self.play(Indicate(d2Pdr2, scale=1.1), ShowCreationThenDestruction(d2Pdr2_rect, run_time= 1.5))
+        self.play(Indicate(d2Pdr2, scale=1.1), ShowPassingFlash(d2Pdr2_rect, run_time= 1.5))
         
         laplacian_phi2 = MathTex(r"""
         \nabla^2 \Phi = 0 &= \frac{\Phi \left(r_0+h_r,\theta_0\right)+\Phi \left(r_0-h_r,\theta_0\right)-2\Phi\left(r_0,\theta_0\right)}{h_r^2} \\ 
@@ -609,7 +613,7 @@ class FDM_part_5(Scene):
 
         symmetry_line = Line(1.2*CIRCLE_RADIUS*np.sin(d_theta)*UP+1.2*CIRCLE_RADIUS*np.cos(d_theta)*RIGHT,1.2*CIRCLE_RADIUS*np.sin(d_theta)*DOWN+1.2*CIRCLE_RADIUS*np.cos(d_theta)*LEFT, color=BLUE_B, stroke_width=2.25*DEFAULT_STROKE_WIDTH)
         
-        self.play(ShowCreationThenDestruction(symmetry_line, run_time=3))
+        self.play(ShowPassingFlash(symmetry_line, run_time=3, time_width=1))
 
         self.wait(2)
 
@@ -617,13 +621,13 @@ class FDM_part_5(Scene):
 
         self.wait(2)
 
-        self.play(FadeOut(vmobject=VGroup(*dots_oh_my[16:24], *lables_oh_my[16:24])))
+        self.play(FadeOut(Group(*(dots_oh_my[16:24] + lables_oh_my[16:24])))) # 0.0.7 kinda fucked this line
 
         self.wait(2)
 
         totalGroup = Group(*self.mobjects)
 
-        self.play(FadeOutAndShift(totalGroup, LEFT))
+        self.play(FadeOut(totalGroup))
         
         self.wait(2)
 
@@ -982,3 +986,20 @@ class MOM_part_1(Scene):
 
         self.wait(2)
 
+class MOM_part_2(Scene):
+    def construct(self):
+        MOMemplate = TexTemplate()
+        # MOMemplate.add_to_preamble(r"\usepackage{unicode-math}") # this one is really buggy.
+        # MOMemplate.add_to_preamble(r"\usepackage{gensymb}")
+        # MOMemplate.add_to_preamble(r"\usepackage{derivative}")
+
+        gauss_3d = MathTex(r"\oint _s \epsilon \mathbf{E} \cdot \mathbf{dA} = \int \rho_s ds", tex_template=MOMemplate)
+
+        self.play(Write(gauss_3d))
+        self.wait(2)
+
+        gauss_2d = MathTex(r"\oint _c \epsilon \mathbf{E} \cdot \mathbf{dl} = \int \rho_l dl", tex_template=MOMemplate).shift(1*DOWN)
+
+        self.play(ApplyMethod(gauss_3d.shift, 1*UP), Write(gauss_2d))
+
+        self.wait(2)
