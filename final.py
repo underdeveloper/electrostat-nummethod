@@ -1610,6 +1610,115 @@ class MOM_part_5(Scene):
         self.play(ReplacementTransform(capacitance, capacitance_final), Unwrite(capacitance3), Unwrite(whats_lowercase_q), Unwrite(charges_lol))
         self.wait(1)
 
-        capacitance_result = MathTex(r"C = 96.12 pF").next_to(capacitance_final, direction=DOWN)
+        capacitance_result = MathTex(r"\Leftrightarrow C = 96.12 pF").next_to(capacitance_final, direction=DOWN)
         self.play(TransformFromCopy(capacitance_final, capacitance_result))
         self.wait(3)
+
+class Comparison(Scene):
+    def construct(self):
+        fdm_potential_dist = MathTex(r"""\setcounter{MaxMatrixCols}{17}
+        \begin{bmatrix}
+            \Phi_0 \\
+            \Phi_1 \\
+            \Phi_2 \\
+            \Phi_3 \\
+            \Phi_4 \\
+            \Phi_5 \\
+            \Phi_6 \\
+            \Phi_7 \\
+            \Phi_8 \\
+            \Phi_9 \\
+            \Phi_{10} \\
+            \Phi_{11} \\
+            \Phi_{12} \\
+            \Phi_{13} \\
+            \Phi_{14} \\
+            \Phi_{15} \\
+            \Phi_{16}
+        \end{bmatrix}
+        =
+        \begin{bmatrix}
+            0.4424 \\
+            0.3509 \\
+            0.1489 \\
+            -0.1479 \\
+            -0.5323 \\
+            0.4062 \\
+            0.3384 \\
+            0.2466 \\
+            0.1334 \\
+            0.4724 \\
+            0.5454 \\
+            0.6579 \\
+            0.8093 \\
+            0.4955 \\
+            0.5948 \\
+            0.7189 \\
+            0.8565 
+        \end{bmatrix}
+        """, color=BLUE).scale_about_point(0.5, ORIGIN).shift(4*LEFT+1.2*UP)
+
+        fdm_capacitance = MathTex(r"C = 46.91 pF", size=0.8, color=BLUE).next_to(fdm_potential_dist, direction=DOWN)
+
+        fdm_text = Text("Finite Difference Method", size=0.6, color=BLUE).next_to(fdm_capacitance, direction=DOWN)
+
+        mom_potential_dist = MathTex(r"""\setcounter{MaxMatrixCols}{17}
+        \begin{bmatrix}
+            \Phi_0 \\
+            \Phi_1 \\
+            \Phi_2 \\
+            \Phi_3 \\
+            \Phi_4 \\
+            \Phi_5 \\
+            \Phi_6 \\
+            \Phi_7 \\
+            \Phi_8 \\
+            \Phi_9 \\
+            \Phi_{10} \\
+            \Phi_{11} \\
+            \Phi_{12} \\
+            \Phi_{13} \\
+            \Phi_{14} \\
+            \Phi_{15} \\
+            \Phi_{16}
+        \end{bmatrix}
+        =
+        \begin{bmatrix}
+            0.6145 \\
+            0.4723 \\
+            0.3095 \\
+            0.1111 \\
+            -0.1740 \\
+            0.6318 \\
+            0.6877 \\
+            0.7983 \\
+            1.0165 \\
+            0.6685\\
+            0.7725 \\
+            0.8579 \\
+            0.9244 \\
+            0.7183 \\
+            0.8254 \\
+            0.8875 \\
+            0.9349 
+        \end{bmatrix}
+        """, color=RED).scale_about_point(0.5, ORIGIN).shift(4*RIGHT+1.2*UP)
+
+        mom_capacitance = MathTex(r"C = 96.12 pF", size=0.8, color=RED).next_to(mom_potential_dist, direction=DOWN)
+
+        mom_text = Text("Method of Moments", size=0.6, color=RED).next_to(mom_capacitance, direction=DOWN)
+
+        FDMGroup = VGroup(fdm_potential_dist, fdm_capacitance, fdm_text)
+        MOMGroup = VGroup(mom_potential_dist, mom_capacitance, mom_text)
+
+        self.play(Create(FDMGroup), Create(MOMGroup))
+        self.wait(2)
+
+        comparison = Text("Perbedaan besar antara hasil-hasil ini mungkin dikarenakan\npenganggapan yang menjadikan tidak akurat.", size=0.5, color=WHITE).shift(3.25*DOWN)
+
+        self.play(Write(comparison))
+        self.wait(3)
+
+        self.play(Unwrite(comparison))
+
+        
