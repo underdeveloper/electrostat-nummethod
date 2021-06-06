@@ -1370,3 +1370,246 @@ class MOM_part_4(Scene):
 
         self.wait(2)
 
+class MOM_part_5(Scene):
+    def construct(self):
+        charge_dist = MathTex(r"""
+        \begin{bmatrix}
+            \rho_l{}_1 \\
+            \rho_l{}_2 \\
+            \rho_l{}_3 \\
+            \rho_l{}_4 \\
+            \rho_l{}_5 \\
+            \rho_l{}_6 \\
+        \end{bmatrix}
+        =
+        \begin{bmatrix}
+            -0.1694\mathrm{x}10^{-9} \\
+            -0.1694\mathrm{x}10^{-9} \\
+            0.6924\mathrm{x}10^{-9} \\
+            0.2688\mathrm{x}10^{-9} \\
+            0.2688\mathrm{x}10^{-9} \\
+            0.6924\mathrm{x}10^{-9} \\
+        \end{bmatrix}     
+        """)
+
+        self.play(Write(charge_dist))
+        self.wait(1)
+
+        self.play(ApplyMethod(charge_dist.shift, 4*LEFT))
+
+        # ! Adding the circle...
+        CIRCLE_RADIUS = 3
+
+        circle = []
+
+        RedArc = Arc(color=RED, start_angle=0, angle=-2*TAU /
+                     3, stroke_width=4*DEFAULT_STROKE_WIDTH, radius=CIRCLE_RADIUS)
+        WhiteArc = Arc(color=WHITE, start_angle=-2*TAU/3, angle=-
+                       TAU/3, stroke_width=4*DEFAULT_STROKE_WIDTH, radius=CIRCLE_RADIUS)
+                       
+        RedSector = Sector(color='#021a00', start_angle=0,
+                           angle=-2*TAU/3, outer_radius=CIRCLE_RADIUS)
+        WhiteSector = Sector(color='#0f0e12', start_angle=0,
+                             angle=TAU/3, outer_radius=CIRCLE_RADIUS)
+
+        circle += [RedSector,WhiteSector]
+
+        # Adding the radial and angular lines
+
+        d_theta = TAU/6
+        d_radial = CIRCLE_RADIUS / 5
+
+        min_theta = 0 * d_theta  # multiple of d_theta
+        max_theta = 6 * d_theta  # multiple of d_theta
+        min_radial = 0 * d_radial # multiple of d_radial
+        max_radial = 5 * d_radial # multiple of d_radial
+
+        theta = min_theta
+        while theta <= max_theta:
+            circle.append(ParametricFunction(lambda t: np.array((
+                t*np.cos(theta), t*np.sin(theta), 0)), color=GREY, t_range=np.array((min_radial, max_radial))))
+            theta += d_theta
+
+        r = min_radial
+        while r <= max_radial:
+            circle.append(ParametricFunction(lambda t: np.array((
+               r*np.cos(t), r*np.sin(t), 0)), color=GREY, t_range=np.array((min_theta, max_theta))))
+            r += d_radial
+
+        # these have to be in front of course
+        circle += [RedArc, WhiteArc]
+
+        circleGroup = VGroup(*circle)
+
+        # self.play(Create(circleGroup), run_time= 4)
+
+        # Segments!
+
+        segment_colours = ["#222222", "#555555", "#AAAAAA", "#AAFFAA", "#55FF55", "#22FF22"]
+        segments: list[ParametricFunction] = []
+        rhos: list[Tex] = []
+        charges: list[Dot] = []
+
+        theta = min_theta+d_theta
+        i = 0
+        while theta < max_theta:
+            segments.append(ParametricFunction(lambda t: np.array((
+                (max_radial)*np.cos(t), (max_radial)*np.sin(t), 0)), color=segment_colours[i], t_range=np.array((theta, theta+d_theta)), stroke_width=1.5*DEFAULT_STROKE_WIDTH))
+            charges.append(Dot((max_radial)*np.cos(theta+d_theta/2)*RIGHT + (max_radial)*np.sin(theta+d_theta/2)*UP, color=BLUE_C))
+            rhos.append(MathTex(r"Q_" + str(i+1), size=0.4, color=BLUE_C).move_to((max_radial+0.5)*np.cos(theta+d_theta/2)*RIGHT + (max_radial+0.5)*np.sin(theta+d_theta/2)*UP))
+            
+            theta += d_theta
+            i += 1
+        
+        segmentsGroup = VGroup(*segments)
+        rhosGroup = VGroup(*rhos)
+        chargesGroup = VGroup(*charges)
+
+        # self.play(Create(segmentsGroup), run_time=1.5)
+        # self.play(Write(rhosGroup), Create(chargesGroup))
+
+        # self.wait(2)
+
+        # Dots and labels, oh my!
+
+        dots_oh_my: list[Dot()] = []
+        lables_oh_my: list[Text()] = []
+        dot_count = 0
+
+        theta = min_theta + d_theta
+        r = min_radial + d_radial
+        while (theta < max_theta+d_radial): 
+            while (r < max_radial):
+                dots_oh_my.append(Dot(point=(r*np.sin(theta))*UP+(r*np.cos(theta))*RIGHT, radius=1.5*DOT_LABEL_SIZE))
+                lables_oh_my.append(Text(text=str(dot_count+1 if dot_count<=15 else (dot_count-7 if dot_count <= 19 else dot_count-15)), size=0.3, color=BLACK).next_to(dots_oh_my[dot_count], direction=0))
+                # self.play(Create(dots_oh_my[dot_count]), Write(lables_oh_my[dot_count]), run_time=0.05)
+                r += d_radial
+                dot_count += 1
+            r = min_theta + d_radial
+            theta += d_theta
+        
+        dots_oh_my.append(Dot(radius=1.5*DOT_LABEL_SIZE))
+        lables_oh_my.append(Text(text=str(0), size=0.3, color=BLACK).next_to(dots_oh_my[dot_count], direction=0))
+        # self.play(Create(dots_oh_my[dot_count]), Write(lables_oh_my[dot_count]), runtime=0.05)
+
+        dotlabGroup = VGroup(*dots_oh_my, *lables_oh_my)
+
+        AllGroup = VGroup(circleGroup, segmentsGroup, chargesGroup, rhosGroup, dotlabGroup)
+
+        self.play(Create(AllGroup.shift(3*RIGHT)), run_time=4, rate_func=rate_functions.linear)
+
+        self.wait(2)
+
+        # ! CIRCLE DONE
+
+        what_IS_Q_though = MathTex(r"\Phi = \sum - \frac{\rho_l \Delta l}{2 \pi \epsilon} ln \lvert r - r' \rvert").next_to(charge_dist, direction=DOWN)
+
+        self.play(Write(what_IS_Q_though))
+        self.wait(2)
+
+        potential_dist = MathTex(r"""\setcounter{MaxMatrixCols}{17}
+        \begin{bmatrix}
+            \Phi_0 \\
+            \Phi_1 \\
+            \Phi_2 \\
+            \Phi_3 \\
+            \Phi_4 \\
+            \Phi_5 \\
+            \Phi_6 \\
+            \Phi_7 \\
+            \Phi_8 \\
+            \Phi_9 \\
+            \Phi_{10} \\
+            \Phi_{11} \\
+            \Phi_{12} \\
+            \Phi_{13} \\
+            \Phi_{14} \\
+            \Phi_{15} \\
+            \Phi_{16}
+        \end{bmatrix}
+        =
+        \begin{bmatrix}
+            0.6145 \\
+            0.4723 \\
+            0.3095 \\
+            0.1111 \\
+            -0.1740 \\
+            0.6318 \\
+            0.6877 \\
+            0.7983 \\
+            1.0165 \\
+            0.6685\\
+            0.7725 \\
+            0.8579 \\
+            0.9244 \\
+            0.7183 \\
+            0.8254 \\
+            0.8875 \\
+            0.9349 
+        \end{bmatrix}
+        """).scale_about_point(0.7, ORIGIN).shift(4*LEFT)
+
+        self.play(ApplyMethod(charge_dist.shift,10*LEFT), Unwrite(what_IS_Q_though))
+        self.play(Write(potential_dist))
+
+        self.wait(3)
+
+        self.play(Unwrite(potential_dist))
+        self.play(ApplyMethod(charge_dist.shift,10*RIGHT))
+        
+        
+        what_is_Q = MathTex(r"Q = \rho_l \Delta l ; \Delta l \approx 0.1").next_to(charge_dist, direction=DOWN)
+
+        self.play(Write(what_is_Q))
+        self.wait(2)
+  
+        charges_lol = MathTex(r"""
+        \begin{bmatrix}
+            Q_1 \\
+            Q_2 \\
+            Q_3 \\
+            Q_4 \\
+            Q_5 \\
+            Q_6 \\
+        \end{bmatrix}
+        =
+        \begin{bmatrix}
+           -0.1694\mathrm{x}10^{-10} \\
+           -0.1694\mathrm{x}10^{-10} \\
+            0.6924\mathrm{x}10^{-10} \\
+            0.2688\mathrm{x}10^{-10} \\
+            0.2688\mathrm{x}10^{-10} \\
+            0.6924\mathrm{x}10^{-10} \\
+        \end{bmatrix}     
+        """).scale(0.7).shift(4*LEFT+2*UP)
+
+        self.play(Unwrite(what_is_Q), ReplacementTransform(charge_dist, charges_lol), ApplyMethod(AllGroup.scale, 0.8))
+        self.wait(2)
+
+        capacitance = MathTex(r"C = \frac{q}{V}").next_to(charge_dist, direction=DOWN)
+
+        whats_lowercase_q = Tex(r"Ambil $q$ sebagai \\ muatan konduktor +1V.", size=0.8).next_to(capacitance, direction=DOWN)
+
+        self.play(Write(capacitance))
+        self.wait(1)
+
+        self.play(Write(whats_lowercase_q), Indicate(VGroup(*(charges[1:5]+rhos[1:5])), run_time=2))
+        self.wait(1)
+        
+        capacitance2 = MathTex(r"q = Q_2 + Q_3 + Q_4 + Q_5", size=0.9).next_to(whats_lowercase_q, direction=DOWN)
+        capacitance3 = MathTex(r"q = 0.1992 nC").next_to(whats_lowercase_q, direction=DOWN)
+
+        self.play(Write(capacitance2))
+        self.wait(1)
+
+        self.play(ReplacementTransform(capacitance2, capacitance3))
+        self.wait(1)
+
+        capacitance_final = MathTex(r"C = \frac{0.1992 nC}{2 V}").next_to(charge_dist, direction=DOWN)
+
+        self.play(ReplacementTransform(capacitance, capacitance_final), Unwrite(capacitance3), Unwrite(whats_lowercase_q), Unwrite(charges_lol))
+        self.wait(1)
+
+        capacitance_result = MathTex(r"C = 96.12 pF").next_to(capacitance_final, direction=DOWN)
+        self.play(TransformFromCopy(capacitance_final, capacitance_result))
+        self.wait(3)
